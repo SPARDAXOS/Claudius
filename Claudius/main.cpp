@@ -215,8 +215,8 @@ int main()
 		SDL_Delay(1000 / 20); //<- "Framerate".
 	}
 
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+	//SDL_DestroyRenderer(renderer);
+	//SDL_DestroyWindow(window);
 
 	return 0;
 }
