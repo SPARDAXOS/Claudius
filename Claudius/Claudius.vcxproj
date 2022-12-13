@@ -18,6 +18,32 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Apple.h" />
+    <ClInclude Include="Include\Color.h" />
+    <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\Player.h" />
+    <ClInclude Include="Include\Rectangle.h" />
+    <ClInclude Include="Include\Renderer.h" />
+    <ClInclude Include="Include\RenderManager.h" />
+    <ClInclude Include="Include\ResourceManager.h" />
+    <ClInclude Include="Include\SDLInitializer.h" />
+    <ClInclude Include="Include\Transform.h" />
+    <ClInclude Include="Include\Vector2.h" />
+    <ClInclude Include="Include\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Apple.cpp" />
+    <ClCompile Include="Source\Color.cpp" />
+    <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\Rectangle.cpp" />
+    <ClCompile Include="Source\Renderer.cpp" />
+    <ClCompile Include="Source\RenderManager.cpp" />
+    <ClCompile Include="Source\Transform.cpp" />
+    <ClCompile Include="Source\Vector2.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{E24A82F3-7B65-4BC7-B31E-A51EF5F4EEAD}</ProjectGuid>
@@ -76,7 +102,10 @@
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)Build\$(Platform)\$(Configuration)\</OutDir>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(ProjectDir)Build\$(Platform)\$(Configuration)\Intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
@@ -98,7 +127,9 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)External\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include\;$(SolutionDir)External\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnablePREfast>true</EnablePREfast>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,34 +170,6 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Apple.cpp" />
-    <ClCompile Include="Collider.cpp" />
-    <ClCompile Include="Color.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Image.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Rectangle.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="Vector2.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Apple.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Collider.h" />
-    <ClInclude Include="Color.h" />
-    <ClInclude Include="Image.h" />
-    <ClInclude Include="KeyCode.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Rectangle.h" />
-    <ClInclude Include="RenderManager.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="Transform.h" />
-    <ClInclude Include="Vector2.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

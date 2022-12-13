@@ -2,7 +2,11 @@
 
 struct Color
 {
-	unsigned char r, g, b, a;
+	unsigned char r
+		, 
+		g, 
+		b, 
+		a;
 
 	Color();
 	Color(const Color& rhs);

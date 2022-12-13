@@ -3,13 +3,14 @@
 #include "RenderManager.h"
 #include <iostream>
 
-void Player::Initialize()
-{
-	color.SetColor(0,255,0,0);
-	rect.SetBounds(0, 0, size, size);
-	trans.SetPosition(starting_x, starting_y);
-	player_score = 0;
 
+Player::Player() {
+	color.SetColor(0, 255, 0, 0); //Could be just initialized
+	rect.SetBounds(0, 0, size, size); //Could be just initialized by game? 
+	trans.SetPosition(starting_x, starting_y); //Could be just initialized by game? 
+	player_score = 0; //Could be just initialized 
+
+	//????? Pooling?
 	for (int i = 0; i < player_size; i++)
 	{
 		parts[i].color.SetColor(255, 0, 0, 0);
@@ -17,6 +18,7 @@ void Player::Initialize()
 		parts[i].trans.SetPosition(trans.GetX(), trans.GetY());
 	}
 }
+
 
 void Player::Render(RenderManager& renderManager)
 {
@@ -81,30 +83,30 @@ void Player::Update(double dt)
 	}
 }
 
-void Player::OnKeyDown(KeyCode key)
-{ //BIG CODE SMELL. JUST USE AN ENUM FOR PLAYER DIRECTION?
-	if (key == KeyCode::LEFT_ARROW)
+void Player::OnKeyDown(SDL_Keycode key)
+{
+	if (key == SDLK_LEFT)
 	{
 		moving_left = true;
 		moving_right = false;
 		moving_up = false;
 		moving_down = false;
 	}
-	else if (key == KeyCode::RIGHT_ARROW)
+	else if (key == SDLK_RIGHT)
 	{
 		moving_left = false;
 		moving_right = true;
 		moving_up = false;
 		moving_down = false;
 	}
-	else if (key == KeyCode::UP_ARROW)
+	else if (key == SDLK_UP)
 	{
 		moving_left = false;
 		moving_right = false;
 		moving_up = true;
 		moving_down = false;
 	}
-	else if (key == KeyCode::DOWN_ARROW)
+	else if (key == SDLK_DOWN)
 	{
 		moving_left = false;
 		moving_right = false;

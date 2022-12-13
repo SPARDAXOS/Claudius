@@ -1,17 +1,20 @@
 #pragma once		// #pragma once == Compile this file once.
 
 #include "Transform.h"
+#include "SDL.h"
 #include "Color.h"
 #include "Rectangle.h"
-#include "KeyCode.h"
 
-struct RenderManager;
+class RenderManager;
 
 struct Player
 {
+
+	Player();
+
 	struct PlayerPart
 	{
-		Transform trans;
+		Transform trans; //Dont need a whole tranform. A vector 2D is more than enough!
 		Color color;
 		Rectangle rect;
 	};
@@ -23,8 +26,7 @@ struct Player
 	Transform trans;
 	Color color;
 	Rectangle rect;
-	void OnKeyDown(KeyCode key);
-	void Initialize();
+	void OnKeyDown(SDL_Keycode key);
 	void Render(RenderManager& renderManager);				// A reference or pointer doesn't need to be #include, just a forward declare.
 	void Update(double dt);
 	void ResetPlayer();
