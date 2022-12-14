@@ -1,6 +1,7 @@
 #pragma once
 #include "SDL.h"
 #include "Color.h"
+#include "EntityBody.h"
 #include <stdexcept>
 
 
@@ -27,7 +28,7 @@ public:
 	}
 
 public:
-	void RenderRect(const SDL_Rect& rect) noexcept;
+	void Render(const EntityBody& body) noexcept;
 	void PresentFrame() noexcept; //Not sure yet how i render stuff
 	void SetRenderColor(SDL_Color color) noexcept;
 	void Clear() noexcept;

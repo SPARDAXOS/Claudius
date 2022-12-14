@@ -4,6 +4,7 @@
 #include "SDL.h"
 #include "Color.h"
 #include "Rectangle.h"
+#include "EntityBody.h"
 
 class RenderManager;
 
@@ -26,6 +27,11 @@ struct Player
 	Transform trans;
 	Color color;
 	Rectangle rect;
+
+	EntityBody m_Body;
+
+
+
 	void OnKeyDown(SDL_Keycode key);
 	void Render(RenderManager& renderManager);				// A reference or pointer doesn't need to be #include, just a forward declare.
 	void Update(double dt);

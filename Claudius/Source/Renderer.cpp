@@ -4,8 +4,11 @@
 
 
 
-void Renderer::RenderRect(const SDL_Rect& rect) noexcept {
-	SDL_RenderFillRect(m_Renderer, &rect); //Weird looking
+void Renderer::Render(const EntityBody& body) noexcept {
+	//So why in the fuck do i need a position? Its the rect first two vars isnt it?
+
+	SetRenderColor(body.m_Color);
+	SDL_RenderFillRect(m_Renderer, &body.m_Rect); //Weird looking
 }
 
 

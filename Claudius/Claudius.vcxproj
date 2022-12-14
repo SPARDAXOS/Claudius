@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Include\Apple.h" />
     <ClInclude Include="Include\Color.h" />
+    <ClInclude Include="Include\EntityBody.h" />
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\Player.h" />
     <ClInclude Include="Include\Rectangle.h" />

@@ -14,7 +14,7 @@ void Game::Run() {
 		PollEvents();
 		
 		Update();
-		//Render(renderManager); //Not yet till i get rid of the render manager
+		Render(); //Not yet till i get rid of the render manager
 
 	}
 }
@@ -29,7 +29,7 @@ void Game::PollEvents() noexcept {
 		case SDL_QUIT: m_Running = false; break;
 		case SDL_KEYDOWN: OnKeyDown(Event.key.keysym.sym); break;
 
-		default: {
+		default: { //Bad the message will always be there!
 			printf("Error: unhandled event \n");
 		}
 		}
@@ -47,14 +47,16 @@ void Game::Update() {
 		return;
 
 
-	playerOne.Update(DeltaTime);
+	m_Player.Update(DeltaTime);
 
+
+	//Move to collision or something and also use an sdl collision function instead of this shit
 	// Player colliding on theirself.
-	for (int i = 0; i < playerOne.player_score; i++)
+	for (int i = 0; i < m_Player.player_score; i++)
 	{
-		if (playerOne.trans.GetPosition() == playerOne.parts[i].trans.GetPosition())
+		if (m_Player.trans.GetPosition() == m_Player.parts[i].trans.GetPosition())
 		{
-			playerOne.ResetPlayer();
+			m_Player.ResetPlayer();
 		}
 	}
 
@@ -72,22 +74,51 @@ void Game::Update() {
 	//}
 
 	// Player collide on apple.
-	if (playerOne.trans.GetPosition() == apple.trans.GetPosition())
+	if (m_Player.trans.GetPosition() == apple.trans.GetPosition())
 	{
-		playerOne.player_score++;
+		m_Player.player_score++;
 		apple.trans.SetPosition((rand() % 125) * 10.0f, (rand() % 70) * 10.0f);
 	}
 }
 
-void Game::Render(RenderManager& renderManager)
+void Game::Render() noexcept
 {
-	playerOne.Render(renderManager);
-	apple.Render(renderManager);
+	m_MainRenderer.Render(m_Player.m_Body);
+
+
+
+
+
+	//m_MainRenderer.SetRenderColor(SDL_Color(0));
+	//m_MainRenderer.Clear();
+
+
+	//for (auto&& entry : renderManager.rectEntries)
+	//{
+	//	SDL_Color EntryColor(entry.color.r, entry.color.g, entry.color.b, entry.color.a);
+	//	m_MainRenderer.SetRenderColor(EntryColor);
+
+	//	SDL_Rect rect{ static_cast<int>(entry.trans.position.x),
+	//				   static_cast<int>(entry.trans.position.y),
+	//				   entry.rect.w,
+	//				   entry.rect.h };
+
+	//	m_MainRenderer.Render(rect);
+	//}
+	//m_MainRenderer.PresentFrame();
+
+
+
+
+
+
+	//playerOne.Render(renderManager);
+	//apple.Render(renderManager);
 }
 
 void Game::OnKeyDown(SDL_Keycode key) noexcept
 {
-	playerOne.OnKeyDown(key);
+	m_Player.OnKeyDown(key);
 }
 
 

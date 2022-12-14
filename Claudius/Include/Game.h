@@ -1,8 +1,13 @@
 #pragma once
+#include "SDL.h"
+#include "SDLInitializer.h"
+#include "Window.h"
+#include "Renderer.h"
+
+
 
 #include <string>
 #include <vector>
-#include "SDL.h"
 #include <stdio.h>
 #include "Apple.h"
 #include "Player.h"
@@ -12,19 +17,18 @@ struct ResourceManager;
 
 class Game
 {
-	Player playerOne;
+	Player m_Player;
 	Apple apple;
 
 public:
 	void Run();
 
-	void Render(RenderManager& rendererManager);
-
 private:
 	void PollEvents() noexcept;
+	void Update();
+	void Render() noexcept;
 
 private:
-	void Update();
 	void OnKeyDown(SDL_Keycode key) noexcept;
 
 
@@ -46,4 +50,9 @@ private: //Time
 
 private:
 	bool m_Running = false;
+
+private:
+	SDLInitializer m_SDLInitializer = {};
+	Window m_MainWindow{ Window::Title("Snake"), Window::Dimensions{ 800, 600 } };
+	Renderer m_MainRenderer{ m_MainWindow.m_Window };
 };

@@ -7,6 +7,10 @@
 Player::Player() {
 	color.SetColor(0, 255, 0, 0); //Could be just initialized
 	rect.SetBounds(0, 0, size, size); //Could be just initialized by game? 
+
+	m_Body.m_Position.x = starting_x;
+	m_Body.m_Position.y = starting_y;
+
 	trans.SetPosition(starting_x, starting_y); //Could be just initialized by game? 
 	player_score = 0; //Could be just initialized 
 
