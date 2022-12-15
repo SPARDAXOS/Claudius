@@ -1,20 +1,26 @@
 #pragma once
+#include "Entity.h"
+#include "Renderer.h"
+#include "Window.h"
 
-#include "Rectangle.h"
-#include "Color.h"
-#include "Transform.h"
+class Apple {
+	using Dimensions = Window::Dimensions;
+	using Position = Utility::Position;
+	using Color = Utility::Color;
+	using Size = Utility::Size;
 
-class RenderManager; //<- Kinda like #include "RenderManager.h", not exactly. Can't use functions. Google forward declaration.
+public:
+	void Render(const Renderer* renderer) const noexcept;
 
-struct Apple
-{
+public:
+	void RandomizeLocation(Dimensions screenSize) noexcept;
 
-	Apple(); //Rule of zero
-	void Render(RenderManager& renderManager);
+public:
+	Position GetPosition() const noexcept;
+	Size GetSize() const noexcept;
 
-	Rectangle rect;
-	Color color;
-	Transform trans;
-
-	bool new_apple = false;
+private:
+	Entity m_Body;
+	const Color m_Color{ 255, 0, 0, 255 };
+	Size m_Size{ 20, 20 };
 };

@@ -25,7 +25,7 @@ public:
 		: m_Title(title), m_Dimensions(dimensions)
 	{
 		m_Window 
-			= SDL_CreateWindow(title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dimensions.m_Width, dimensions.m_Height, SDL_WINDOW_RESIZABLE);
+			= SDL_CreateWindow(title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dimensions.m_Width, dimensions.m_Height, SDL_WINDOW_ALWAYS_ON_TOP);
 
 		if (m_Window == nullptr)
 		{

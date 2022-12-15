@@ -1,20 +1,26 @@
 #pragma once
-
-#include <iostream>
 #include "Apple.h"
-#include "RenderManager.h"
 
-//Constructor.
-Apple::Apple()
-{
-	color.SetColor(0, 255, 0, 0); //Could be initialized
-	rect.SetBounds(0, 0, 10, 10); //it was 10 10 but should set those to some proper shit by the game.
-	trans.SetPosition(100, 200); //Could be initialized by game
-}
 
-void Apple::Render(RenderManager& renderManager)
-{
-	renderManager.Render(rect, color, trans);
+void Apple::Render(const Renderer* renderer) const noexcept {
+	if (renderer == nullptr) {
+		return;
+	}
+	renderer->RenderToBackBuffer(m_Body.m_Position, m_Color, m_Size);
 }
 
 
+void Apple::RandomizeLocation(Dimensions screenSize) noexcept {
+	const int RandomX = rand() % (screenSize.m_Width - m_Size.m_Width);
+	const int RandomY = rand() % (screenSize.m_Height - m_Size.m_Height);
+
+	m_Body = Entity(RandomX, RandomY);
+}
+
+
+Utility::Position Apple::GetPosition() const noexcept {
+	return m_Body.m_Position;
+}
+Utility::Size Apple::GetSize() const noexcept {
+	return m_Size;
+}

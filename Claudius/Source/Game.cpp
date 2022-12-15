@@ -1,21 +1,18 @@
-// 2019-12-05 Teemu Laiho
-
 #include "Game.h"
-#include "RenderManager.h"
-#include <iostream>
 
 
 void Game::Run() {
+	std::srand(static_cast<unsigned int>(time(nullptr)));
 
 	m_Running = true;
+
+	RandomizeEntitiesPositions();
 
 	while (m_Running)
 	{
 		PollEvents();
-		
 		Update();
-		Render(); //Not yet till i get rid of the render manager
-
+		Render(); 
 	}
 }
 
@@ -26,11 +23,16 @@ void Game::PollEvents() noexcept {
 	{
 		switch (Event.type)
 		{
-		case SDL_QUIT: m_Running = false; break;
-		case SDL_KEYDOWN: OnKeyDown(Event.key.keysym.sym); break;
+		case SDL_QUIT: {
+			m_Running = false;
+		}break;
 
-		default: { //Bad the message will always be there!
-			printf("Error: unhandled event \n");
+		case SDL_KEYDOWN: { 
+			m_Player.UpdateInput(Event.key.keysym.sym);
+		}break;
+
+		default: {
+			continue;
 		}
 		}
 	}
@@ -39,7 +41,7 @@ void Game::PollEvents() noexcept {
 
 
 
-void Game::Update() {
+void Game::Update() noexcept {
 	const float DeltaTime = CalculateDeltaTime();
 	m_ElapsedTime += DeltaTime;
 
@@ -47,18 +49,29 @@ void Game::Update() {
 		return;
 
 
+	//I might want to rework some things here. 
+	//The collision with apple causes a part to be created on top of the snake head.
+	//The update moves the snake and fixes any parts on top of the snake head.
+	//The collision with body will work successfully as long as:
+	//Update puts the snake in a good state where no body part is on top of the other.
+	//Collision with body is done after update and after collision with apple.
+	//Consider moving some collision functions into the snake or something so it doesnt look so suspecsios.
+
 	m_Player.Update(DeltaTime);
-
-
-	//Move to collision or something and also use an sdl collision function instead of this shit
-	// Player colliding on theirself.
-	for (int i = 0; i < m_Player.player_score; i++)
-	{
-		if (m_Player.trans.GetPosition() == m_Player.parts[i].trans.GetPosition())
-		{
-			m_Player.ResetPlayer();
-		}
+	
+	if (CheckPlayerBodyCollision()) {
+		m_Player.Reset();
+		RandomizeEntitiesPositions();
+		m_CurrentScore = 0;
 	}
+
+	if (CheckPlayerAppleCollision()) {
+		m_Player.AddBodyPart();
+		m_Apple.RandomizeLocation(m_MainWindow.m_Dimensions);
+		m_CurrentScore++;
+	}
+
+
 
 	//DISABLED AFTER THE NEW WINDOW WAS ADDED!
 	// Player going out of X bounds.
@@ -72,71 +85,82 @@ void Game::Update() {
 	//{
 	//	playerOne.ResetPlayer();
 	//}
-
-	// Player collide on apple.
-	if (m_Player.trans.GetPosition() == apple.trans.GetPosition())
-	{
-		m_Player.player_score++;
-		apple.trans.SetPosition((rand() % 125) * 10.0f, (rand() % 70) * 10.0f);
-	}
 }
 
-void Game::Render() noexcept
-{
-	m_MainRenderer.Render(m_Player.m_Body);
-
-
-
-
-
-	//m_MainRenderer.SetRenderColor(SDL_Color(0));
-	//m_MainRenderer.Clear();
-
-
-	//for (auto&& entry : renderManager.rectEntries)
-	//{
-	//	SDL_Color EntryColor(entry.color.r, entry.color.g, entry.color.b, entry.color.a);
-	//	m_MainRenderer.SetRenderColor(EntryColor);
-
-	//	SDL_Rect rect{ static_cast<int>(entry.trans.position.x),
-	//				   static_cast<int>(entry.trans.position.y),
-	//				   entry.rect.w,
-	//				   entry.rect.h };
-
-	//	m_MainRenderer.Render(rect);
-	//}
-	//m_MainRenderer.PresentFrame();
-
-
-
-
-
-
-	//playerOne.Render(renderManager);
-	//apple.Render(renderManager);
-}
-
-void Game::OnKeyDown(SDL_Keycode key) noexcept
-{
-	m_Player.OnKeyDown(key);
+void Game::Render() noexcept {
+	m_Player.Render(&m_MainRenderer);
+	m_Apple.Render(&m_MainRenderer);
+	m_MainRenderer.PresentBackBuffer();
 }
 
 
-bool Game::ShouldUpdateGame(float deltaTime) noexcept {
-	m_UpdateAccumulator += deltaTime;
-	if (m_UpdateAccumulator >= m_UpdateRate) {
-		m_UpdateAccumulator -= m_UpdateRate;
+SDL_Rect Game::CreateSDLRect(Position position, Size size) const noexcept {
+	return SDL_Rect(position.m_X, position.m_Y, size.m_Width, size.m_Height);
+}
+bool Game::CheckPlayerAppleCollision() const noexcept {
+	const auto SnakeHeadPosition = m_Player.GetSnakeHeadPosition();
+	const auto SnakeHeadSize = m_Player.GetSnakeHeadSize();
+	const SDL_Rect PlayerRect = CreateSDLRect(SnakeHeadPosition, SnakeHeadSize);
+
+	const auto ApplePosition = m_Apple.GetPosition();
+	const auto AppleSize = m_Apple.GetSize();
+	const SDL_Rect AppleRect = CreateSDLRect(ApplePosition, AppleSize);
+
+	const auto Results = SDL_HasIntersection(&PlayerRect, &AppleRect);
+	if (Results == SDL_TRUE){
 		return true;
 	}
 
 	return false;
+}
+bool Game::CheckPlayerBodyCollision() const noexcept {
+	const std::vector<Entity> Body = m_Player.GetSnakeBody();
+	if (Body.size() <= 1) {
+		return false;
+	}
+
+	const auto HeadPosition = m_Player.GetSnakeHeadPosition();
+	const auto HeadSize = m_Player.GetSnakeHeadSize();
+	const SDL_Rect HeadRect = CreateSDLRect(HeadPosition, HeadSize);
+
+	auto CheckHeadWithBody = [this, HeadRect, &Body, HeadSize](const Entity& entity) noexcept {
+		if (entity == *std::begin(Body)) {
+			return false;
+		}
+
+		const SDL_Rect BodyPartRect = CreateSDLRect(entity.m_Position, HeadSize);
+		const auto Results = SDL_HasIntersection(&HeadRect, &BodyPartRect);
+		if (Results == SDL_TRUE) {
+			return true;
+		}
+		return false;
+	};
+
+	return std::any_of(std::begin(Body), std::end(Body), CheckHeadWithBody);
+}
+
+
+void Game::RandomizeEntitiesPositions() noexcept {
+	m_Player.RandomizeLocation(m_MainWindow.m_Dimensions);
+	m_Apple.RandomizeLocation(m_MainWindow.m_Dimensions);
+}
+void Game::ResetGameState() noexcept {
+	m_Player.Reset();
+	RandomizeEntitiesPositions();
 }
 
 
 float Game::CalculateDeltaTime() noexcept {
 	m_LastTick = m_CurrentTick;
 	m_CurrentTick = SDL_GetTicks();
-
 	return (m_CurrentTick - m_LastTick) / 1000.0f;
+}
+bool Game::ShouldUpdateGame(float deltaTime) noexcept {
+	m_UpdateAccumulator += deltaTime;
+	if (m_UpdateAccumulator >= m_UpdateRate) {
+		m_UpdateAccumulator -= m_UpdateRate;
+		return true;
+	}
+	return false;
 }
 

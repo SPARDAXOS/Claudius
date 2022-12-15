@@ -1,55 +1,68 @@
-#pragma once		// #pragma once == Compile this file once.
-
-#include "Transform.h"
+#pragma once
 #include "SDL.h"
-#include "Color.h"
-#include "Rectangle.h"
-#include "EntityBody.h"
+#include "Entity.h"
+#include "Renderer.h"
+#include "Window.h"
 
-class RenderManager;
+#include <vector>
+#include <algorithm>
+#include <iterator>
 
-struct Player
-{
 
-	Player();
+class Player {
+	using Dimensions = Window::Dimensions;
+	using Position = Utility::Position;
+	using Color = Utility::Color;
+	using Size = Utility::Size;
 
-	struct PlayerPart
-	{
-		Transform trans; //Dont need a whole tranform. A vector 2D is more than enough!
-		Color color;
-		Rectangle rect;
+private:
+	enum class MovementDirection {
+		NONE,
+		RIGHT,
+		LEFT,
+		UP,
+		DOWN
 	};
 
-	//Static == belongs to the class, not the object of the class.
-	static const int player_size = 50;
-	PlayerPart parts[player_size];
-	
-	Transform trans;
-	Color color;
-	Rectangle rect;
+public:
+	void Update(float deltaTime) noexcept;
+	void UpdateInput(SDL_Keycode key) noexcept;
+	void Render(const Renderer* renderer) const noexcept;
 
-	EntityBody m_Body;
+public:
+	Position GetSnakeHeadPosition() const noexcept;
+	Size GetSnakeHeadSize() const noexcept;
+	const std::vector<Entity>& GetSnakeBody() const noexcept;
 
+public:
+	void RandomizeLocation(Dimensions screenSize) noexcept;
+	void AddBodyPart() noexcept;
+	void Reset() noexcept;
 
+private:
+	void UpdateBodyPosition() noexcept;
+	void UpdateHeadPosition() noexcept;
+	void CheckForBounds() noexcept;
 
-	void OnKeyDown(SDL_Keycode key);
-	void Render(RenderManager& renderManager);				// A reference or pointer doesn't need to be #include, just a forward declare.
-	void Update(double dt);
-	void ResetPlayer();
+private:
+	void RenderHead(const Renderer* renderer) const noexcept;
+	void RenderBody(const Renderer* renderer) const noexcept;
 
-	int size = 10;
-	const float movement_speed = 10.0f;
-	const float starting_x = 300.0f;
-	const float starting_y = 300.0f;
+private:
+	const Color m_HeadColor{ 255, 0, 0, 255 };
+	const Color m_BodyColor{ 0, 255, 0, 255 };
+	const Size m_PartSize{ 10, 10 };
 
-	bool moving_right = false;
-	bool moving_left = false;
-	bool moving_up = false;
-	bool moving_down = false;
-	bool new_snake = false;
+private:
+	const int m_MovementSpeed =15;
+	int m_StartingPositionX = 0;
+	int m_StartingPositionY = 0;
 
-	float x_array_difference[player_size] = {};
-	float y_array_difference[player_size] = {};
+	Position LastPosition;
 
-	int player_score = 0;
+private:
+	std::vector<Entity> m_SnakeBody = { { m_StartingPositionX, m_StartingPositionY } };
+
+private:
+	MovementDirection m_CurrentMovementDirection = MovementDirection::NONE;
 };

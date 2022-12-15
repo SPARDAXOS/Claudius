@@ -1,55 +1,55 @@
 #pragma once
+#include <random>
 #include "SDL.h"
 #include "SDLInitializer.h"
 #include "Window.h"
 #include "Renderer.h"
-
-
-
-#include <string>
-#include <vector>
-#include <stdio.h>
 #include "Apple.h"
 #include "Player.h"
 
-class RenderManager;
-struct ResourceManager;
 
 class Game
 {
-	Player m_Player;
-	Apple apple;
+	using Position = Utility::Position;
+	using Size = Utility::Size;
 
 public:
 	void Run();
 
 private:
 	void PollEvents() noexcept;
-	void Update();
+	void Update() noexcept;
 	void Render() noexcept;
 
 private:
-	void OnKeyDown(SDL_Keycode key) noexcept;
-
-
+	SDL_Rect CreateSDLRect(Position position, Size size) const noexcept;
+	bool CheckPlayerAppleCollision() const noexcept;
+	bool CheckPlayerBodyCollision() const noexcept;
 
 private:
-	[[nodiscard]] bool ShouldUpdateGame(float deltaTime) noexcept;
+	void ResetGameState() noexcept;
+	void RandomizeEntitiesPositions() noexcept;
 
 private:
 	float CalculateDeltaTime() noexcept;
+	[[nodiscard]] bool ShouldUpdateGame(float deltaTime) noexcept;
 
 private:
-	float m_UpdateRate = 1.0f;
-	float m_UpdateAccumulator = 0.0f;
+	unsigned int m_CurrentScore = 0;
 
-private: //Time
+private:
 	int m_LastTick = 0;
 	int m_CurrentTick = 0;
 	float m_ElapsedTime = 0.0f;
 
 private:
 	bool m_Running = false;
+	float m_UpdateRate = 0.1f;
+	float m_UpdateAccumulator = 0.0f;
+
+private:
+	Player m_Player;
+	Apple m_Apple;
 
 private:
 	SDLInitializer m_SDLInitializer = {};

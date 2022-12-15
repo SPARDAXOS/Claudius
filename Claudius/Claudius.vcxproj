@@ -20,30 +20,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Apple.h" />
-    <ClInclude Include="Include\Color.h" />
-    <ClInclude Include="Include\EntityBody.h" />
+    <ClInclude Include="Include\Entity.h" />
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\Player.h" />
-    <ClInclude Include="Include\Rectangle.h" />
     <ClInclude Include="Include\Renderer.h" />
-    <ClInclude Include="Include\RenderManager.h" />
-    <ClInclude Include="Include\ResourceManager.h" />
     <ClInclude Include="Include\SDLInitializer.h" />
-    <ClInclude Include="Include\Transform.h" />
-    <ClInclude Include="Include\Vector2.h" />
+    <ClInclude Include="Include\Utility.h" />
     <ClInclude Include="Include\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Apple.cpp" />
-    <ClCompile Include="Source\Color.cpp" />
     <ClCompile Include="Source\Game.cpp" />
-    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Player.cpp" />
-    <ClCompile Include="Source\Rectangle.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
-    <ClCompile Include="Source\RenderManager.cpp" />
-    <ClCompile Include="Source\Transform.cpp" />
-    <ClCompile Include="Source\Vector2.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

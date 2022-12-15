@@ -1,131 +1,129 @@
 #include "Player.h"
-#include <cmath>
-#include "RenderManager.h"
-#include <iostream>
 
 
-Player::Player() {
-	color.SetColor(0, 255, 0, 0); //Could be just initialized
-	rect.SetBounds(0, 0, size, size); //Could be just initialized by game? 
-
-	m_Body.m_Position.x = starting_x;
-	m_Body.m_Position.y = starting_y;
-
-	trans.SetPosition(starting_x, starting_y); //Could be just initialized by game? 
-	player_score = 0; //Could be just initialized 
-
-	//????? Pooling?
-	for (int i = 0; i < player_size; i++)
-	{
-		parts[i].color.SetColor(255, 0, 0, 0);
-		parts[i].rect.SetBounds(0, 0, size, size);
-		parts[i].trans.SetPosition(trans.GetX(), trans.GetY());
+void Player::Update(float deltaTime) noexcept {
+	if (m_SnakeBody.size() > 1) {
+		UpdateBodyPosition();
 	}
+	UpdateHeadPosition();
+}
+void Player::UpdateInput(SDL_Keycode key) noexcept {
+	switch (key) {
+	case SDLK_LEFT: {
+		if (m_CurrentMovementDirection != MovementDirection::RIGHT) {
+			m_CurrentMovementDirection = MovementDirection::LEFT;
+		}
+	}break;
+	case SDLK_RIGHT: {
+		if (m_CurrentMovementDirection != MovementDirection::LEFT) {
+			m_CurrentMovementDirection = MovementDirection::RIGHT;
+		}
+	}break;
+	case SDLK_UP: {
+		if (m_CurrentMovementDirection != MovementDirection::DOWN) {
+			m_CurrentMovementDirection = MovementDirection::UP;
+		}
+	}break;
+	case SDLK_DOWN: {
+		if (m_CurrentMovementDirection != MovementDirection::UP) {
+			m_CurrentMovementDirection = MovementDirection::DOWN;
+		}
+	}break;
+	default: {
+		return;
+	}
+	}
+}
+void Player::Render(const Renderer* renderer) const noexcept {
+	RenderHead(renderer);
+	RenderBody(renderer);
 }
 
 
-void Player::Render(RenderManager& renderManager)
-{
-	renderManager.Render(rect, color, trans);
-
-	for (int i = 0; i < player_score; i++)
-	{
-		renderManager.Render(parts[i].rect, parts[i].color, parts[i].trans);
-	}
+Utility::Position Player::GetSnakeHeadPosition() const noexcept {
+	return std::begin(m_SnakeBody)->m_Position;
+}
+Utility::Size Player::GetSnakeHeadSize() const noexcept {
+	return m_PartSize;
+}
+const std::vector<Entity>& Player::GetSnakeBody() const noexcept {
+	return m_SnakeBody;
 }
 
-void Player::Update(double dt)
-{
-	x_array_difference[0] = trans.GetX() - parts[0].trans.GetX();
-	y_array_difference[0] = trans.GetY() - parts[0].trans.GetY();
 
-	for (int i = 1; i < (player_size - 1); i++)
-	{
-			x_array_difference[i] = parts[i].trans.GetX() - parts[i + 1].trans.GetX();
-			y_array_difference[i] = parts[i].trans.GetY() - parts[i + 1].trans.GetY();
-	}
+void Player::RandomizeLocation(Dimensions screenSize) noexcept {
+	const int RandomX = rand() % (screenSize.m_Width - m_PartSize.m_Width);
+	const int RandomY = rand() % (screenSize.m_Height - m_PartSize.m_Height);
 
-	if (moving_left == true)
-	{
-		trans.ChangePosition(-movement_speed, 0);
-		parts[0].trans.ChangePosition(x_array_difference[0], y_array_difference[0]);
+	m_StartingPositionX = RandomX;
+	m_StartingPositionY = RandomY;
 
-		for (int i = 1; i < player_size; i++)
-		{
-			parts[i].trans.ChangePosition(x_array_difference[i - 1], y_array_difference[i - 1]);
-		}
-	}
-	else if (moving_right == true)
-	{
-		trans.ChangePosition(movement_speed, 0);
-		parts[0].trans.ChangePosition(x_array_difference[0], y_array_difference[0]);
-
-		for (int i = 1; i < player_size; i++)
-		{
-			parts[i].trans.ChangePosition(x_array_difference[i - 1], y_array_difference[i - 1]);
-		}
-	}
-	else if (moving_up == true)
-	{
-		trans.ChangePosition(0, -movement_speed);
-		parts[0].trans.ChangePosition(x_array_difference[0], y_array_difference[0]);
-
-		for (int i = 1; i < player_size; i++)
-		{
-			parts[i].trans.ChangePosition(x_array_difference[i - 1], y_array_difference[i - 1]);
-		}
-	}
-	else if (moving_down == true)
-	{
-		trans.ChangePosition(0, movement_speed);
-		parts[0].trans.ChangePosition(x_array_difference[0], y_array_difference[0]);
-
-		for (int i = 1; i < player_size; i++)
-		{
-			parts[i].trans.ChangePosition(x_array_difference[i - 1], y_array_difference[i - 1]);
-		}
-	}
+	*std::begin(m_SnakeBody)._Ptr = Entity(RandomX, RandomY);
 }
 
-void Player::OnKeyDown(SDL_Keycode key)
-{
-	if (key == SDLK_LEFT)
-	{
-		moving_left = true;
-		moving_right = false;
-		moving_up = false;
-		moving_down = false;
+
+void Player::UpdateHeadPosition() noexcept {
+	auto* SnakeHeadPosition = &std::begin(m_SnakeBody)->m_Position;
+
+	switch (m_CurrentMovementDirection) {
+	case MovementDirection::LEFT: {
+		LastPosition = *SnakeHeadPosition;
+		SnakeHeadPosition->m_X -= m_MovementSpeed;
+	}break;
+	case MovementDirection::RIGHT: {
+		LastPosition = *SnakeHeadPosition;
+		SnakeHeadPosition->m_X += m_MovementSpeed;
+	}break;
+	case MovementDirection::UP: {
+		LastPosition = *SnakeHeadPosition;
+		SnakeHeadPosition->m_Y -= m_MovementSpeed;
+	}break;
+	case MovementDirection::DOWN: {
+		LastPosition = *SnakeHeadPosition;
+		SnakeHeadPosition->m_Y += m_MovementSpeed;
+	}break;
+	default: {
+		break;
 	}
-	else if (key == SDLK_RIGHT)
-	{
-		moving_left = false;
-		moving_right = true;
-		moving_up = false;
-		moving_down = false;
-	}
-	else if (key == SDLK_UP)
-	{
-		moving_left = false;
-		moving_right = false;
-		moving_up = true;
-		moving_down = false;
-	}
-	else if (key == SDLK_DOWN)
-	{
-		moving_left = false;
-		moving_right = false;
-		moving_up = false;
-		moving_down = true;
 	}
 }
+void Player::UpdateBodyPosition() noexcept {
+	auto UpdateBodyParts = [this](Entity& part) {
+		auto IteratorToPart = std::find(std::begin(m_SnakeBody), std::end(m_SnakeBody), part);
+		if (IteratorToPart == std::begin(m_SnakeBody))
+			return;
 
-void Player::ResetPlayer()
-{
-	player_score = 0;
-	moving_right = false;
-	moving_left = false;
-	moving_up = false;
-	moving_down = false;
+		auto IteratorToPreviousPart = std::prev(IteratorToPart, 1);
+		part = *IteratorToPreviousPart._Ptr;
+	};
 
-	trans.SetPosition(starting_x, starting_y);
+	std::for_each(std::rbegin(m_SnakeBody), std::rend(m_SnakeBody), UpdateBodyParts);
+}
+
+
+void Player::RenderHead(const Renderer* renderer) const noexcept {
+	if (renderer == nullptr)
+		return;
+
+	renderer->RenderToBackBuffer(std::begin(m_SnakeBody)->m_Position, m_HeadColor, m_PartSize);
+}
+void Player::RenderBody(const Renderer* renderer) const noexcept {
+	if (renderer == nullptr)
+		return;
+
+	auto Lambda = [this, renderer](const Entity& body) {
+		renderer->RenderToBackBuffer(body.m_Position, m_BodyColor, m_PartSize);
+	};
+	std::for_each(std::begin(m_SnakeBody), std::end(m_SnakeBody), Lambda);
+}
+
+
+void Player::AddBodyPart() noexcept {
+	const Entity NewBodyPart = m_SnakeBody.back();
+	m_SnakeBody.emplace_back(NewBodyPart);
+}
+void Player::Reset() noexcept {
+	m_CurrentMovementDirection = MovementDirection::NONE;
+	m_SnakeBody.clear();
+	m_SnakeBody.push_back({ m_StartingPositionX, m_StartingPositionY });
 }

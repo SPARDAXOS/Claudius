@@ -1,13 +1,14 @@
 #pragma once
 #include "SDL.h"
-#include "Color.h"
-#include "EntityBody.h"
+#include "Utility.h"
 #include <stdexcept>
 
 
-//Note: I made this into its own class while the rest into wrappers. Am i right? I mean everything just manages one resource.
-
 class Renderer {
+	using Color = Utility::Color;
+	using Position = Utility::Position;
+	using Size = Utility::Size;
+
 public:
 	Renderer() = delete;
 	Renderer(const Renderer&) = delete;
@@ -22,21 +23,29 @@ public:
 		{
 			throw std::runtime_error::runtime_error(SDL_GetError());
 		}
+		else {
+			SDL_SetRenderDrawBlendMode(m_Renderer, m_BlendMode);
+		}
 	}
 	~Renderer() noexcept {
 		SDL_DestroyRenderer(m_Renderer);
 	}
 
 public:
-	void Render(const EntityBody& body) noexcept;
-	void PresentFrame() noexcept; //Not sure yet how i render stuff
-	void SetRenderColor(SDL_Color color) noexcept;
+	void RenderToBackBuffer(Position drawPosition, Color drawColor, Size drawSize) const noexcept;
+	void PresentBackBuffer() noexcept;
+
+private:
+	void SetRenderColor(const SDL_Color color) const noexcept;
 	void Clear() noexcept;
 
 private:
+	const SDL_Color ConstructSDLType(Color color) const noexcept;
+	const SDL_Rect ConstructSDLType(Position position, Size size) const noexcept;
 
+private:
+	const SDL_BlendMode m_BlendMode = SDL_BlendMode::SDL_BLENDMODE_BLEND;
 
-private: //Maybe you cant reach it? you just ask it to do stuff
-
+private:
 	SDL_Renderer* m_Renderer = nullptr;
 };
