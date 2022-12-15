@@ -5,7 +5,6 @@
 
 
 struct Window {
-public:
 	struct Dimensions {
 		unsigned int m_Width = 800;
 		unsigned int m_Height = 600;

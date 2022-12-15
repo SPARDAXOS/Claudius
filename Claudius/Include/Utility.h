@@ -7,7 +7,7 @@ namespace Utility{
 	};
 
 	struct Color {
-		unsigned int m_R = 0, m_G = 0, m_B = 0, m_A = 255;
+		Uint8 m_R = 0, m_G = 0, m_B = 0, m_A = 255;
 	};
 
 	struct Size {

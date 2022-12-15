@@ -24,11 +24,11 @@ private:
 	void Render() const noexcept;
 
 private:
-	SDL_Rect CreateSDLRect(Position position) const noexcept;
 	void RunCollisionChecks() noexcept;
 	[[nodiscard]] bool CheckPlayerAppleCollision(const SDL_Rect& player) const noexcept;
-	[[nodiscard]] bool CheckPlayerBodyCollision(const SDL_Rect& player, const std::vector<Position>& body) const noexcept;
+	[[nodiscard]] bool CheckPlayerBodyCollision(const SDL_Rect& player) const noexcept;
 	[[nodiscard]] bool CheckPlayerBoundries() const noexcept;
+	SDL_Rect CreateSDLRect(Position position) const noexcept;
 
 private:
 	void ResetGameState() noexcept;

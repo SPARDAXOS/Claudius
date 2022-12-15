@@ -4,21 +4,22 @@
 
 struct Apple {
 	using Dimensions = Window::Dimensions;
+	using Position = Utility::Position;
 
 public:
 	void Render(const Renderer* renderer) const noexcept {
 		if (renderer == nullptr) {
 			return;
 		}
-		renderer->RenderToBackBuffer(m_Body, AppleColor);
+		renderer->Render(m_Body, AppleColor);
 	}
 	void RandomizeLocation(Dimensions screenSize) noexcept {
 		const int RandomX = rand() % (screenSize.m_Width - EntitySize.m_Width);
 		const int RandomY = rand() % (screenSize.m_Height - EntitySize.m_Height);
 
-		m_Body = Utility::Position(RandomX, RandomY);
+		m_Body = Position(RandomX, RandomY);
 	}
 
 public:
-	Utility::Position m_Body;
+	Position m_Body;
 };

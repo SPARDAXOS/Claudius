@@ -1,9 +1,10 @@
 #include "Player.h"
 
 using Position = Utility::Position;
+using SnakeVector = std::vector<Position>;
 
 
-void Player::Update(float deltaTime) noexcept {
+void Player::Update([[maybe_unused]] float deltaTime) noexcept {
 	if (m_SnakeBody.size() > 1) {
 		UpdateBodyPosition();
 	}
@@ -42,25 +43,33 @@ void Player::Render(const Renderer* renderer) const noexcept {
 }
 
 
-Position Player::GetSnakeHead() const noexcept {
-	return *std::begin(m_SnakeBody);
-}
 size_t Player::GetSnakeBodySize() const noexcept {
 	return m_SnakeBody.size();
 }
-std::vector<Position> Player::GetSnakeBodyOnly() const noexcept {
-	std::vector<Position> NewVector = m_SnakeBody;
-	NewVector.erase(std::begin(NewVector));
-	//return std::copy(std::begin(m_SnakeBody) + 1, std::end(m_SnakeBody), NewVector);
-	return NewVector;
+Position Player::GetSnakeHead() const noexcept {
+	return m_SnakeBody.front();
+}
+[[nodiscard]] SnakeVector Player::GetSnakeBodyOnly() const noexcept {
+	SnakeVector CopiedVector;
+	CopiedVector.reserve(m_SnakeBody.size());
+	std::copy(std::begin(m_SnakeBody) + 1, std::end(m_SnakeBody), std::back_inserter(CopiedVector));
+	return CopiedVector;
 }
 
 
-void Player::RandomizeLocation(Dimensions screenSize) noexcept {
+void Player::RandomizeLocation(WindowDimensions screenSize) noexcept {
 	const int RandomX = rand() % ((screenSize.m_Width - EntitySize.m_Width) + 1);
 	const int RandomY = rand() % ((screenSize.m_Height - EntitySize.m_Height) + 1);
 
 	*std::begin(m_SnakeBody) = Position(RandomX, RandomY);
+}
+void Player::AddBodyPart() noexcept {
+	m_SnakeBody.emplace_back(m_SnakeBody.back());
+}
+void Player::Reset() noexcept {
+	m_CurrentMovementDirection = MovementDirection::NONE;
+	m_SnakeBody.clear();
+	m_SnakeBody.push_back({});
 }
 
 
@@ -93,24 +102,16 @@ void Player::UpdateBodyPosition() noexcept {
 void Player::RenderHead(const Renderer* renderer) const noexcept {
 	if (renderer == nullptr)
 		return;
-	renderer->RenderToBackBuffer(*std::begin(m_SnakeBody), SnakeHeadColor);
+	renderer->Render(*std::begin(m_SnakeBody), SnakeHeadColor);
 }
 void Player::RenderBody(const Renderer* renderer) const noexcept {
 	if (renderer == nullptr)
 		return;
 
 	auto RenderEachPart = [this, renderer](const Position& body) noexcept {
-		renderer->RenderToBackBuffer(body, SnakeBodyColor);
+		renderer->Render(body, SnakeBodyColor);
 	};
 	std::for_each(std::begin(m_SnakeBody), std::end(m_SnakeBody), RenderEachPart);
 }
 
 
-void Player::AddBodyPart() noexcept {
-	m_SnakeBody.emplace_back(m_SnakeBody.back());
-}
-void Player::Reset() noexcept {
-	m_CurrentMovementDirection = MovementDirection::NONE;
-	m_SnakeBody.clear();
-	m_SnakeBody.push_back({});
-}

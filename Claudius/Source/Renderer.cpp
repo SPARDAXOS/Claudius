@@ -2,12 +2,12 @@
 
 
 
-void Renderer::RenderToBackBuffer(Position drawPosition, Color drawColor) const noexcept {
+void Renderer::Render(Position drawPosition, Color drawColor) const noexcept {
 	SetRenderColor(ConstructSDLType(drawColor));
 	const SDL_Rect DrawRect = ConstructSDLType(drawPosition);
 	SDL_RenderFillRect(m_Renderer, &DrawRect);
 }
-void Renderer::PresentBackBuffer() const noexcept {
+void Renderer::Present() const noexcept {
 	SDL_RenderPresent(m_Renderer);
 	Clear();
 }

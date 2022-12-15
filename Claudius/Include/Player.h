@@ -10,8 +10,9 @@
 
 
 class Player {
-	using Dimensions = Window::Dimensions;
+	using WindowDimensions = Window::Dimensions;
 	using Position = Utility::Position;
+	using SnakeVector = std::vector<Position>;
 
 private:
 	enum class MovementDirection {
@@ -23,17 +24,17 @@ private:
 	};
 
 public:
-	void Update(float deltaTime) noexcept;
+	void Update([[maybe_unused]] float deltaTime) noexcept;
 	void UpdateInput(SDL_Keycode key) noexcept;
 	void Render(const Renderer* renderer) const noexcept;
 
 public:
-	Position GetSnakeHead() const noexcept;
 	size_t GetSnakeBodySize() const noexcept;
-	std::vector<Position> GetSnakeBodyOnly() const noexcept;
+	Position GetSnakeHead() const noexcept;
+	[[nodiscard]] SnakeVector GetSnakeBodyOnly() const noexcept;
 
 public:
-	void RandomizeLocation(Dimensions screenSize) noexcept;
+	void RandomizeLocation(WindowDimensions screenSize) noexcept;
 	void AddBodyPart() noexcept;
 	void Reset() noexcept;
 
@@ -46,7 +47,7 @@ private:
 	void RenderBody(const Renderer* renderer) const noexcept;
 
 private:
-	std::vector<Position> m_SnakeBody = { {} };
+	SnakeVector m_SnakeBody = { {} };
 
 private:
 	MovementDirection m_CurrentMovementDirection = MovementDirection::NONE;

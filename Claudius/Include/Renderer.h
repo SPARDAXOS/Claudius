@@ -31,8 +31,8 @@ public:
 	Renderer& operator=(Renderer&&) = delete;
 
 public:
-	void RenderToBackBuffer(Position drawPosition, Color drawColor) const noexcept;
-	void PresentBackBuffer() const noexcept;
+	void Render(Position drawPosition, Color drawColor) const noexcept;
+	void Present() const noexcept;
 
 private:
 	void SetRenderColor(const SDL_Color color) const noexcept;
