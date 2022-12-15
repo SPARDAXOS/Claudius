@@ -8,31 +8,36 @@
 #include <random>
 
 
+
 class Game {
+	using WindowDimensions = Window::Dimensions;
+	using WindowTitle = Window::Title;
+	using Position = Utility::Position;
+	using Size = Utility::Size;
+
 public:
 	void Run() noexcept;
 
 private:
 	void PollEvents() noexcept;
 	void Update() noexcept;
-	void Render() noexcept;
+	void Render() const noexcept;
 
 private:
-	SDL_Rect CreateSDLRect(Utility::Position position, Utility::Size size) const noexcept;
-	[[nodiscard]] bool CheckPlayerAppleCollision() const noexcept;
-	[[nodiscard]] bool CheckPlayerBodyCollision() const noexcept;
+	SDL_Rect CreateSDLRect(Position position) const noexcept;
+	void RunCollisionChecks() noexcept;
+	[[nodiscard]] bool CheckPlayerAppleCollision(const SDL_Rect& player) const noexcept;
+	[[nodiscard]] bool CheckPlayerBodyCollision(const SDL_Rect& player, const std::vector<Position>& body) const noexcept;
 	[[nodiscard]] bool CheckPlayerBoundries() const noexcept;
 
 private:
 	void ResetGameState() noexcept;
+	void AppleEaten() noexcept;
 	void RandomizeEntitiesPositions() noexcept;
 
 private:
-	float CalculateDeltaTime() noexcept;
+	[[nodiscard]] float CalculateDeltaTime() noexcept;
 	[[nodiscard]] bool ShouldUpdateGame(float deltaTime) noexcept;
-
-private:
-	unsigned int m_CurrentScore = 0; //Could be moved back to player
 
 private:
 	int m_LastTick = 0;
@@ -41,7 +46,7 @@ private:
 
 private:
 	bool m_Running = false;
-	float m_UpdateRate = 0.1f;
+	const float m_UpdateRate = 0.1f;
 	float m_UpdateAccumulator = 0.0f;
 
 private:
@@ -49,7 +54,7 @@ private:
 	Apple m_Apple = {};
 
 private:
-	SDLInitializer m_SDLInitializer = {};
-	Window m_MainWindow{ Window::Title("Snake"), Window::Dimensions{ 800, 600 } };
-	Renderer m_MainRenderer{ m_MainWindow.m_Window };
+	SDLInitializer m_SDLInitializer = { SDL_INIT_VIDEO }; //Or SDL_INIT_EVERYTHING i guess...
+	Window m_MainWindow = { WindowTitle{ "Snake" }, SDL_WINDOW_SHOWN };
+	Renderer m_MainRenderer{ m_MainWindow.m_Window, SDL_RENDERER_ACCELERATED, SDL_BLENDMODE_BLEND };
 };

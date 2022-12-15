@@ -2,6 +2,7 @@
 #include "SDL.h"
 #include "Renderer.h"
 #include "Window.h"
+#include "EntityAttributes.h"
 
 #include <vector>
 #include <algorithm>
@@ -10,6 +11,7 @@
 
 class Player {
 	using Dimensions = Window::Dimensions;
+	using Position = Utility::Position;
 
 private:
 	enum class MovementDirection {
@@ -26,9 +28,9 @@ public:
 	void Render(const Renderer* renderer) const noexcept;
 
 public:
-	Utility::Position GetSnakeHead() const noexcept;
-	Utility::Size GetSnakeHeadSize() const noexcept;
-	std::vector<Utility::Position> GetSnakeBody() const noexcept;
+	Position GetSnakeHead() const noexcept;
+	size_t GetSnakeBodySize() const noexcept;
+	std::vector<Position> GetSnakeBodyOnly() const noexcept;
 
 public:
 	void RandomizeLocation(Dimensions screenSize) noexcept;
@@ -44,17 +46,7 @@ private:
 	void RenderBody(const Renderer* renderer) const noexcept;
 
 private:
-	const Utility::Color m_HeadColor{ 255, 0, 0, 255 };
-	const Utility::Color m_BodyColor{ 0, 255, 0, 255 };
-	const Utility::Size m_PartSize{ 10, 10 };
-
-private:
-	const int m_MovementSpeed =15;
-	int m_StartingPositionX = 0;
-	int m_StartingPositionY = 0;
-
-private:
-	std::vector<Utility::Position> m_SnakeBody = { { m_StartingPositionX, m_StartingPositionY } };
+	std::vector<Position> m_SnakeBody = { {} };
 
 private:
 	MovementDirection m_CurrentMovementDirection = MovementDirection::NONE;

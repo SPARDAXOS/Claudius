@@ -2,7 +2,7 @@
 
 
 void Game::Run() noexcept {
-	std::srand(static_cast<unsigned int>(time(nullptr)));
+	std::srand(SDL_static_cast(unsigned int, time(nullptr)));
 
 	m_Running = true;
 
@@ -19,18 +19,15 @@ void Game::Run() noexcept {
 
 void Game::PollEvents() noexcept {
 	SDL_Event Event;
-	while (SDL_PollEvent(&Event))
-	{
+	while (SDL_PollEvent(&Event)) {
 		switch (Event.type)
 		{
 		case SDL_QUIT: {
 			m_Running = false;
 		}break;
-
 		case SDL_KEYDOWN: { 
 			m_Player.UpdateInput(Event.key.keysym.sym);
 		}break;
-
 		default: {
 			continue;
 		}
@@ -48,88 +45,59 @@ void Game::Update() noexcept {
 	if (!ShouldUpdateGame(DeltaTime))
 		return;
 
-
-	//I might want to rework some things here. 
-	//The collision with apple causes a part to be created on top of the snake head.
-	//The update moves the snake and fixes any parts on top of the snake head.
-	//The collision with body will work successfully as long as:
-	//Update puts the snake in a good state where no body part is on top of the other.
-	//Collision with body is done after update and after collision with apple.
-	//Consider moving some collision functions into the snake or something so it doesnt look so suspecsios.
-
 	m_Player.Update(DeltaTime);
-	
-	if (CheckPlayerBodyCollision()) {
-		ResetGameState();
-	}
-
-	if (CheckPlayerAppleCollision()) {
-		m_Player.AddBodyPart();
-		m_Apple.RandomizeLocation(m_MainWindow.m_Dimensions);
-		m_CurrentScore++;
-	}
-	if (CheckPlayerBoundries()) {
-		ResetGameState();
-	}
-	//TODO: make func for it. Like add score or something
-	//TODO: make func for collisions so i can hide the order importance better
+	RunCollisionChecks();
 }
 
-void Game::Render() noexcept {
+void Game::Render() const noexcept {
 	m_Player.Render(&m_MainRenderer);
 	m_Apple.Render(&m_MainRenderer);
 	m_MainRenderer.PresentBackBuffer();
 }
 
 
-SDL_Rect Game::CreateSDLRect(Utility::Position position, Utility::Size size) const noexcept {
-	return SDL_Rect(position.m_X, position.m_Y, size.m_Width, size.m_Height);
+SDL_Rect Game::CreateSDLRect(Position position) const noexcept {
+	return SDL_Rect(position.m_X, position.m_Y, EntitySize.m_Width, EntitySize.m_Height);
 }
-[[nodiscard]] bool Game::CheckPlayerAppleCollision() const noexcept {
-	const auto SnakeHeadPosition = m_Player.GetSnakeHead();
-	const auto SnakeHeadSize = m_Player.GetSnakeHeadSize();
-	const SDL_Rect PlayerRect = CreateSDLRect(SnakeHeadPosition, SnakeHeadSize);
+void Game::RunCollisionChecks() noexcept {
+	const SDL_Rect SnakeHeadRect = CreateSDLRect(m_Player.GetSnakeHead());
 
-	const auto ApplePosition = m_Apple.GetPosition();
-	const auto AppleSize = m_Apple.GetSize();
-	const SDL_Rect AppleRect = CreateSDLRect(ApplePosition, AppleSize);
-
-	const auto Results = SDL_HasIntersection(&PlayerRect, &AppleRect);
-	if (Results == SDL_TRUE){
+	if (m_Player.GetSnakeBodySize() > 1) {
+		std::vector<Position> Body = m_Player.GetSnakeBodyOnly();
+		if (CheckPlayerBodyCollision(SnakeHeadRect, Body)) {
+			ResetGameState();
+		}
+	}
+	if (CheckPlayerAppleCollision(SnakeHeadRect)) {
+		AppleEaten();
+	}
+	if (CheckPlayerBoundries()) {
+		ResetGameState();
+	}
+}
+[[nodiscard]] bool Game::CheckPlayerAppleCollision(const SDL_Rect& player) const noexcept {
+	const SDL_Rect AppleRect = CreateSDLRect(m_Apple.m_Body);
+	const auto Results = SDL_HasIntersection(&player, &AppleRect);
+	if (Results == SDL_TRUE) {
 		return true;
 	}
 	return false;
 }
-[[nodiscard]] bool Game::CheckPlayerBodyCollision() const noexcept {
-	std::vector<Utility::Position> Body = m_Player.GetSnakeBody();
-	if (Body.size() <= 1) {
-		return false;
-	}
-
-	Body.erase(std::begin(Body)); //Get rid of head
-
-	const auto Head = m_Player.GetSnakeHead();
-	const auto HeadSize = m_Player.GetSnakeHeadSize();
-	const SDL_Rect HeadRect = CreateSDLRect(Head, HeadSize);
-
-	auto CheckHeadWithBody = [this, HeadRect, &Body, HeadSize](const Utility::Position& entity) noexcept {
-		//if (entity == *std::begin(Body)) {
-		//	return false;
-		//}
-
-		const SDL_Rect BodyPartRect = CreateSDLRect(entity, HeadSize);
-		const auto Results = SDL_HasIntersection(&HeadRect, &BodyPartRect);
+[[nodiscard]] bool Game::CheckPlayerBodyCollision(const SDL_Rect& player, const std::vector<Position>& body) const noexcept {
+	auto CheckHeadWithBody = [this, &player](const Position& entity) noexcept {
+		const SDL_Rect BodyPartRect = CreateSDLRect(entity);
+		const auto Results = SDL_HasIntersection(&player, &BodyPartRect);
 		if (Results == SDL_TRUE) {
 			return true;
 		}
 		return false;
 	};
 
-	return std::any_of(std::begin(Body), std::end(Body), CheckHeadWithBody);
+	return std::any_of(std::begin(body), std::end(body), CheckHeadWithBody);
 }
 [[nodiscard]] bool Game::CheckPlayerBoundries() const noexcept {
-	const Window::Dimensions Boundries = m_MainWindow.m_Dimensions;
-	const Utility::Position PlayerPosition = m_Player.GetSnakeHead();
+	const WindowDimensions Boundries = m_MainWindow.m_Dimensions;
+	const Position PlayerPosition = m_Player.GetSnakeHead();
 
 	const bool ConditionPositiveX = PlayerPosition.m_X >= Boundries.m_Width;
 	const bool ConditionNegativeX = PlayerPosition.m_X < 0;
@@ -142,14 +110,17 @@ SDL_Rect Game::CreateSDLRect(Utility::Position position, Utility::Size size) con
 }
 
 
-void Game::RandomizeEntitiesPositions() noexcept {
-	m_Player.RandomizeLocation(m_MainWindow.m_Dimensions);
-	m_Apple.RandomizeLocation(m_MainWindow.m_Dimensions);
-}
 void Game::ResetGameState() noexcept {
 	m_Player.Reset();
 	RandomizeEntitiesPositions();
-	m_CurrentScore = 0;
+}
+void Game::AppleEaten() noexcept {
+	m_Player.AddBodyPart();
+	m_Apple.RandomizeLocation(m_MainWindow.m_Dimensions);
+}
+void Game::RandomizeEntitiesPositions() noexcept {
+	m_Player.RandomizeLocation(m_MainWindow.m_Dimensions);
+	m_Apple.RandomizeLocation(m_MainWindow.m_Dimensions);
 }
 
 

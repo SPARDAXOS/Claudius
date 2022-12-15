@@ -2,21 +2,23 @@
 #include "Renderer.h"
 #include "Window.h"
 
-class Apple {
+struct Apple {
 	using Dimensions = Window::Dimensions;
 
 public:
-	void Render(const Renderer* renderer) const noexcept;
+	void Render(const Renderer* renderer) const noexcept {
+		if (renderer == nullptr) {
+			return;
+		}
+		renderer->RenderToBackBuffer(m_Body, AppleColor);
+	}
+	void RandomizeLocation(Dimensions screenSize) noexcept {
+		const int RandomX = rand() % (screenSize.m_Width - EntitySize.m_Width);
+		const int RandomY = rand() % (screenSize.m_Height - EntitySize.m_Height);
+
+		m_Body = Utility::Position(RandomX, RandomY);
+	}
 
 public:
-	void RandomizeLocation(Dimensions screenSize) noexcept;
-
-public:
-	Utility::Position GetPosition() const noexcept;
-	Utility::Size GetSize() const noexcept;
-
-private:
 	Utility::Position m_Body;
-	const Utility::Color m_Color{ 255, 0, 0, 255 };
-	Utility::Size m_Size{ 20, 20 };
 };
