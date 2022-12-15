@@ -9,9 +9,6 @@
 
 
 class Game {
-	using Position = Utility::Position;
-	using Size = Utility::Size;
-
 public:
 	void Run() noexcept;
 
@@ -21,7 +18,7 @@ private:
 	void Render() noexcept;
 
 private:
-	SDL_Rect CreateSDLRect(Position position, Size size) const noexcept;
+	SDL_Rect CreateSDLRect(Utility::Position position, Utility::Size size) const noexcept;
 	[[nodiscard]] bool CheckPlayerAppleCollision() const noexcept;
 	[[nodiscard]] bool CheckPlayerBodyCollision() const noexcept;
 	[[nodiscard]] bool CheckPlayerBoundries() const noexcept;

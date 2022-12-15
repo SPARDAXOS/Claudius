@@ -40,13 +40,13 @@ void Player::Render(const Renderer* renderer) const noexcept {
 }
 
 
-Utility::Position Player::GetSnakeHeadPosition() const noexcept {
-	return std::begin(m_SnakeBody)->m_Position;
+Utility::Position Player::GetSnakeHead() const noexcept {
+	return *std::begin(m_SnakeBody);
 }
 Utility::Size Player::GetSnakeHeadSize() const noexcept {
 	return m_PartSize;
 }
-const std::vector<Entity>& Player::GetSnakeBody() const noexcept {
+std::vector<Utility::Position> Player::GetSnakeBody() const noexcept {
 	return m_SnakeBody;
 }
 
@@ -58,28 +58,24 @@ void Player::RandomizeLocation(Dimensions screenSize) noexcept {
 	m_StartingPositionX = RandomX;
 	m_StartingPositionY = RandomY;
 
-	*std::begin(m_SnakeBody)._Ptr = Entity(RandomX, RandomY);
+	*std::begin(m_SnakeBody) = Utility::Position(RandomX, RandomY);
 }
 
 
 void Player::UpdateHeadPosition() noexcept {
-	auto* SnakeHeadPosition = &std::begin(m_SnakeBody)->m_Position;
+	Utility::Position* SnakeHeadPosition = std::begin(m_SnakeBody)._Ptr;
 
 	switch (m_CurrentMovementDirection) {
 	case MovementDirection::LEFT: {
-		LastPosition = *SnakeHeadPosition;
 		SnakeHeadPosition->m_X -= m_MovementSpeed;
 	}break;
 	case MovementDirection::RIGHT: {
-		LastPosition = *SnakeHeadPosition;
 		SnakeHeadPosition->m_X += m_MovementSpeed;
 	}break;
 	case MovementDirection::UP: {
-		LastPosition = *SnakeHeadPosition;
 		SnakeHeadPosition->m_Y -= m_MovementSpeed;
 	}break;
 	case MovementDirection::DOWN: {
-		LastPosition = *SnakeHeadPosition;
 		SnakeHeadPosition->m_Y += m_MovementSpeed;
 	}break;
 	default: {
@@ -96,21 +92,21 @@ void Player::RenderHead(const Renderer* renderer) const noexcept {
 	if (renderer == nullptr)
 		return;
 
-	renderer->RenderToBackBuffer(std::begin(m_SnakeBody)->m_Position, m_HeadColor, m_PartSize);
+	renderer->RenderToBackBuffer(*std::begin(m_SnakeBody), m_HeadColor, m_PartSize);
 }
 void Player::RenderBody(const Renderer* renderer) const noexcept {
 	if (renderer == nullptr)
 		return;
 
-	auto RenderEachPart = [this, renderer](const Entity& body) noexcept {
-		renderer->RenderToBackBuffer(body.m_Position, m_BodyColor, m_PartSize);
+	auto RenderEachPart = [this, renderer](const Utility::Position& body) noexcept {
+		renderer->RenderToBackBuffer(body, m_BodyColor, m_PartSize);
 	};
 	std::for_each(std::begin(m_SnakeBody), std::end(m_SnakeBody), RenderEachPart);
 }
 
 
 void Player::AddBodyPart() noexcept {
-	const Entity NewBodyPart = m_SnakeBody.back();
+	Utility::Position NewBodyPart = m_SnakeBody.back();
 	m_SnakeBody.emplace_back(NewBodyPart);
 }
 void Player::Reset() noexcept {

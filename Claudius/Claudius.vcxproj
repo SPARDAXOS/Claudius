@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Apple.h" />
-    <ClInclude Include="Include\Entity.h" />
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\Player.h" />
     <ClInclude Include="Include\Renderer.h" />

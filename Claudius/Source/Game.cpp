@@ -73,7 +73,6 @@ void Game::Update() noexcept {
 	}
 	//TODO: make func for it. Like add score or something
 	//TODO: make func for collisions so i can hide the order importance better
-	//TODO: make a function for boundry checking //Done
 }
 
 void Game::Render() noexcept {
@@ -83,11 +82,11 @@ void Game::Render() noexcept {
 }
 
 
-SDL_Rect Game::CreateSDLRect(Position position, Size size) const noexcept {
+SDL_Rect Game::CreateSDLRect(Utility::Position position, Utility::Size size) const noexcept {
 	return SDL_Rect(position.m_X, position.m_Y, size.m_Width, size.m_Height);
 }
 [[nodiscard]] bool Game::CheckPlayerAppleCollision() const noexcept {
-	const auto SnakeHeadPosition = m_Player.GetSnakeHeadPosition();
+	const auto SnakeHeadPosition = m_Player.GetSnakeHead();
 	const auto SnakeHeadSize = m_Player.GetSnakeHeadSize();
 	const SDL_Rect PlayerRect = CreateSDLRect(SnakeHeadPosition, SnakeHeadSize);
 
@@ -102,21 +101,23 @@ SDL_Rect Game::CreateSDLRect(Position position, Size size) const noexcept {
 	return false;
 }
 [[nodiscard]] bool Game::CheckPlayerBodyCollision() const noexcept {
-	const std::vector<Entity> Body = m_Player.GetSnakeBody();
+	std::vector<Utility::Position> Body = m_Player.GetSnakeBody();
 	if (Body.size() <= 1) {
 		return false;
 	}
 
-	const auto HeadPosition = m_Player.GetSnakeHeadPosition();
+	Body.erase(std::begin(Body)); //Get rid of head
+
+	const auto Head = m_Player.GetSnakeHead();
 	const auto HeadSize = m_Player.GetSnakeHeadSize();
-	const SDL_Rect HeadRect = CreateSDLRect(HeadPosition, HeadSize);
+	const SDL_Rect HeadRect = CreateSDLRect(Head, HeadSize);
 
-	auto CheckHeadWithBody = [this, HeadRect, &Body, HeadSize](const Entity& entity) noexcept {
-		if (entity == *std::begin(Body)) {
-			return false;
-		}
+	auto CheckHeadWithBody = [this, HeadRect, &Body, HeadSize](const Utility::Position& entity) noexcept {
+		//if (entity == *std::begin(Body)) {
+		//	return false;
+		//}
 
-		const SDL_Rect BodyPartRect = CreateSDLRect(entity.m_Position, HeadSize);
+		const SDL_Rect BodyPartRect = CreateSDLRect(entity, HeadSize);
 		const auto Results = SDL_HasIntersection(&HeadRect, &BodyPartRect);
 		if (Results == SDL_TRUE) {
 			return true;
@@ -128,7 +129,7 @@ SDL_Rect Game::CreateSDLRect(Position position, Size size) const noexcept {
 }
 [[nodiscard]] bool Game::CheckPlayerBoundries() const noexcept {
 	const Window::Dimensions Boundries = m_MainWindow.m_Dimensions;
-	const Position PlayerPosition = m_Player.GetSnakeHeadPosition();
+	const Utility::Position PlayerPosition = m_Player.GetSnakeHead();
 
 	const bool ConditionPositiveX = PlayerPosition.m_X >= Boundries.m_Width;
 	const bool ConditionNegativeX = PlayerPosition.m_X < 0;

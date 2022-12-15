@@ -5,10 +5,6 @@
 
 
 class Renderer {
-	using Color = Utility::Color;
-	using Position = Utility::Position;
-	using Size = Utility::Size;
-
 public:
 	Renderer() = delete;
 	Renderer(const Renderer&) = delete;
@@ -32,7 +28,7 @@ public:
 	}
 
 public:
-	void RenderToBackBuffer(Position drawPosition, Color drawColor, Size drawSize) const noexcept;
+	void RenderToBackBuffer(Utility::Position drawPosition, Utility::Color drawColor, Utility::Size drawSize) const noexcept;
 	void PresentBackBuffer() noexcept;
 
 private:
@@ -40,8 +36,8 @@ private:
 	void Clear() noexcept;
 
 private:
-	const SDL_Color ConstructSDLType(Color color) const noexcept;
-	const SDL_Rect ConstructSDLType(Position position, Size size) const noexcept;
+	const SDL_Color ConstructSDLType(Utility::Color color) const noexcept;
+	const SDL_Rect ConstructSDLType(Utility::Position position, Utility::Size size) const noexcept;
 
 private:
 	const SDL_BlendMode m_BlendMode = SDL_BlendMode::SDL_BLENDMODE_BLEND;
