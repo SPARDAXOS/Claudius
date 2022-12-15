@@ -1,20 +1,19 @@
 #pragma once
-#include <random>
 #include "SDL.h"
 #include "SDLInitializer.h"
 #include "Window.h"
 #include "Renderer.h"
 #include "Apple.h"
 #include "Player.h"
+#include <random>
 
 
-class Game
-{
+class Game {
 	using Position = Utility::Position;
 	using Size = Utility::Size;
 
 public:
-	void Run();
+	void Run() noexcept;
 
 private:
 	void PollEvents() noexcept;
@@ -23,8 +22,9 @@ private:
 
 private:
 	SDL_Rect CreateSDLRect(Position position, Size size) const noexcept;
-	bool CheckPlayerAppleCollision() const noexcept;
-	bool CheckPlayerBodyCollision() const noexcept;
+	[[nodiscard]] bool CheckPlayerAppleCollision() const noexcept;
+	[[nodiscard]] bool CheckPlayerBodyCollision() const noexcept;
+	[[nodiscard]] bool CheckPlayerBoundries() const noexcept;
 
 private:
 	void ResetGameState() noexcept;
@@ -35,7 +35,7 @@ private:
 	[[nodiscard]] bool ShouldUpdateGame(float deltaTime) noexcept;
 
 private:
-	unsigned int m_CurrentScore = 0;
+	unsigned int m_CurrentScore = 0; //Could be moved back to player
 
 private:
 	int m_LastTick = 0;
@@ -48,8 +48,8 @@ private:
 	float m_UpdateAccumulator = 0.0f;
 
 private:
-	Player m_Player;
-	Apple m_Apple;
+	Player m_Player = {};
+	Apple m_Apple = {};
 
 private:
 	SDLInitializer m_SDLInitializer = {};

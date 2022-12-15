@@ -88,16 +88,7 @@ void Player::UpdateHeadPosition() noexcept {
 	}
 }
 void Player::UpdateBodyPosition() noexcept {
-	auto UpdateBodyParts = [this](Entity& part) {
-		auto IteratorToPart = std::find(std::begin(m_SnakeBody), std::end(m_SnakeBody), part);
-		if (IteratorToPart == std::begin(m_SnakeBody))
-			return;
-
-		auto IteratorToPreviousPart = std::prev(IteratorToPart, 1);
-		part = *IteratorToPreviousPart._Ptr;
-	};
-
-	std::for_each(std::rbegin(m_SnakeBody), std::rend(m_SnakeBody), UpdateBodyParts);
+	std::shift_right(std::begin(m_SnakeBody), std::end(m_SnakeBody), 1);
 }
 
 
@@ -111,10 +102,10 @@ void Player::RenderBody(const Renderer* renderer) const noexcept {
 	if (renderer == nullptr)
 		return;
 
-	auto Lambda = [this, renderer](const Entity& body) {
+	auto RenderEachPart = [this, renderer](const Entity& body) noexcept {
 		renderer->RenderToBackBuffer(body.m_Position, m_BodyColor, m_PartSize);
 	};
-	std::for_each(std::begin(m_SnakeBody), std::end(m_SnakeBody), Lambda);
+	std::for_each(std::begin(m_SnakeBody), std::end(m_SnakeBody), RenderEachPart);
 }
 
 

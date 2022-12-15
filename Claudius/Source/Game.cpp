@@ -1,7 +1,7 @@
 #include "Game.h"
 
 
-void Game::Run() {
+void Game::Run() noexcept {
 	std::srand(static_cast<unsigned int>(time(nullptr)));
 
 	m_Running = true;
@@ -60,9 +60,7 @@ void Game::Update() noexcept {
 	m_Player.Update(DeltaTime);
 	
 	if (CheckPlayerBodyCollision()) {
-		m_Player.Reset();
-		RandomizeEntitiesPositions();
-		m_CurrentScore = 0;
+		ResetGameState();
 	}
 
 	if (CheckPlayerAppleCollision()) {
@@ -70,21 +68,12 @@ void Game::Update() noexcept {
 		m_Apple.RandomizeLocation(m_MainWindow.m_Dimensions);
 		m_CurrentScore++;
 	}
-
-
-
-	//DISABLED AFTER THE NEW WINDOW WAS ADDED!
-	// Player going out of X bounds.
-	//if (playerOne.trans.GetX() > width || playerOne.trans.GetX() < 0)
-	//{
-	//	playerOne.ResetPlayer();
-	//}
-
-	//// Player going out of Y bounds.
-	//if (playerOne.trans.GetY() > height || playerOne.trans.GetY() < 0)
-	//{
-	//	playerOne.ResetPlayer();
-	//}
+	if (CheckPlayerBoundries()) {
+		ResetGameState();
+	}
+	//TODO: make func for it. Like add score or something
+	//TODO: make func for collisions so i can hide the order importance better
+	//TODO: make a function for boundry checking //Done
 }
 
 void Game::Render() noexcept {
@@ -97,7 +86,7 @@ void Game::Render() noexcept {
 SDL_Rect Game::CreateSDLRect(Position position, Size size) const noexcept {
 	return SDL_Rect(position.m_X, position.m_Y, size.m_Width, size.m_Height);
 }
-bool Game::CheckPlayerAppleCollision() const noexcept {
+[[nodiscard]] bool Game::CheckPlayerAppleCollision() const noexcept {
 	const auto SnakeHeadPosition = m_Player.GetSnakeHeadPosition();
 	const auto SnakeHeadSize = m_Player.GetSnakeHeadSize();
 	const SDL_Rect PlayerRect = CreateSDLRect(SnakeHeadPosition, SnakeHeadSize);
@@ -110,10 +99,9 @@ bool Game::CheckPlayerAppleCollision() const noexcept {
 	if (Results == SDL_TRUE){
 		return true;
 	}
-
 	return false;
 }
-bool Game::CheckPlayerBodyCollision() const noexcept {
+[[nodiscard]] bool Game::CheckPlayerBodyCollision() const noexcept {
 	const std::vector<Entity> Body = m_Player.GetSnakeBody();
 	if (Body.size() <= 1) {
 		return false;
@@ -138,6 +126,19 @@ bool Game::CheckPlayerBodyCollision() const noexcept {
 
 	return std::any_of(std::begin(Body), std::end(Body), CheckHeadWithBody);
 }
+[[nodiscard]] bool Game::CheckPlayerBoundries() const noexcept {
+	const Window::Dimensions Boundries = m_MainWindow.m_Dimensions;
+	const Position PlayerPosition = m_Player.GetSnakeHeadPosition();
+
+	const bool ConditionPositiveX = PlayerPosition.m_X >= Boundries.m_Width;
+	const bool ConditionNegativeX = PlayerPosition.m_X < 0;
+	const bool ConditionPositiveY = PlayerPosition.m_Y >= Boundries.m_Height;
+	const bool ConditionNegativeY = PlayerPosition.m_Y < 0;
+	if (ConditionPositiveX || ConditionNegativeX || ConditionPositiveY || ConditionNegativeY) {
+		return true;
+	}
+	return false;
+}
 
 
 void Game::RandomizeEntitiesPositions() noexcept {
@@ -147,6 +148,7 @@ void Game::RandomizeEntitiesPositions() noexcept {
 void Game::ResetGameState() noexcept {
 	m_Player.Reset();
 	RandomizeEntitiesPositions();
+	m_CurrentScore = 0;
 }
 
 

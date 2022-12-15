@@ -94,7 +94,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Build\$(Platform)\$(Configuration)\</OutDir>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>$(ProjectDir)Build\$(Platform)\$(Configuration)\Intermediate\</IntDir>
   </PropertyGroup>
@@ -121,6 +121,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Include\;$(SolutionDir)External\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnablePREfast>true</EnablePREfast>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
