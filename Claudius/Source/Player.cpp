@@ -54,11 +54,11 @@ Position Player::GetSnakeHead() const noexcept {
 }
 
 
-void Player::RandomizeLocation(WindowDimensions screenSize) noexcept {
-	const int RandomX = rand() % ((screenSize.m_Width - EntitySize.m_Width) + 1);
-	const int RandomY = rand() % ((screenSize.m_Height - EntitySize.m_Height) + 1);
+void Player::RandomizePosition(WindowDimensions windowDimensions) noexcept {
+	const int RandomX = rand() % (windowDimensions.m_Width - EntitySize.m_Width);
+	const int RandomY = rand() % (windowDimensions.m_Height - EntitySize.m_Height);
 
-	*std::begin(m_SnakeBody) = Position(RandomX, RandomY);
+	m_SnakeBody.front() = { RandomX, RandomY };
 }
 void Player::AddBodyPart() noexcept {
 	m_SnakeBody.emplace_back(m_SnakeBody.back());

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Utility {
+namespace Utility{
 
 	struct Position {
 		int m_X = 0, m_Y = 0;

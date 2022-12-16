@@ -108,11 +108,11 @@ void Game::ResetGameState() noexcept {
 }
 void Game::AppleEaten() noexcept {
 	m_Player.AddBodyPart();
-	m_Apple.RandomizeLocation(m_MainWindow.m_Dimensions);
+	m_Apple.RandomizePosition(m_MainWindow.m_Dimensions);
 }
 void Game::RandomizeEntitiesPositions() noexcept {
-	m_Player.RandomizeLocation(m_MainWindow.m_Dimensions);
-	m_Apple.RandomizeLocation(m_MainWindow.m_Dimensions);
+	m_Player.RandomizePosition(m_MainWindow.m_Dimensions);
+	m_Apple.RandomizePosition(m_MainWindow.m_Dimensions);
 }
 
 

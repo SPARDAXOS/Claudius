@@ -34,7 +34,7 @@ public:
 	[[nodiscard]] SnakeVector GetSnakeBodyOnly() const noexcept;
 
 public:
-	void RandomizeLocation(WindowDimensions screenSize) noexcept;
+	void RandomizePosition(WindowDimensions windowDimensions) noexcept;
 	void AddBodyPart() noexcept;
 	void Reset() noexcept;
 
