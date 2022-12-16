@@ -54,7 +54,7 @@ private:
 	Apple m_Apple = {};
 
 private:
-	SDLInitializer m_SDLInitializer = { SDL_INIT_VIDEO }; //Or SDL_INIT_EVERYTHING i guess...
+	SDLInitializer m_SDLInitializer = { SDL_INIT_EVERYTHING };
 	Window m_MainWindow = { WindowTitle{ "Snake" }, SDL_WINDOW_SHOWN };
 	Renderer m_MainRenderer{ m_MainWindow.m_Window, SDL_RENDERER_ACCELERATED, SDL_BLENDMODE_BLEND };
 };
