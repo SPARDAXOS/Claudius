@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Utility{
+namespace Utility {
 
 	struct Position {
 		int m_X = 0, m_Y = 0;
@@ -14,9 +14,5 @@ namespace Utility{
 		unsigned int m_Width = 0, m_Height = 0;
 	};
 
-
-	inline bool operator==(const Position& lhs, const Position& rhs) noexcept {
-		return &lhs == &rhs;
-	}
 }
 
