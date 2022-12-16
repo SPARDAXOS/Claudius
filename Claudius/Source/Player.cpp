@@ -105,7 +105,7 @@ void Player::UpdateBodyPosition() noexcept {
 void Player::RenderHead(const Renderer* renderer) const noexcept {
 	if (renderer == nullptr)
 		return;
-	renderer->Render(*std::begin(m_SnakeBody), SnakeHeadColor);
+	renderer->Render(m_SnakeBody.front(), SnakeHeadColor);
 }
 void Player::RenderBody(const Renderer* renderer) const noexcept {
 	if (renderer == nullptr)
