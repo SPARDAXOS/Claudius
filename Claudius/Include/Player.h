@@ -39,6 +39,7 @@ public:
 	void Reset() noexcept;
 
 private:
+	void UpdatePosition() noexcept;
 	void UpdateBodyPosition() noexcept;
 	void UpdateHeadPosition() noexcept;
 

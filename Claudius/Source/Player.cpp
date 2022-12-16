@@ -5,10 +5,7 @@ using SnakeVector = std::vector<Position>;
 
 
 void Player::Update([[maybe_unused]] float deltaTime) noexcept {
-	if (m_SnakeBody.size() > 1) {
-		UpdateBodyPosition();
-	}
-	UpdateHeadPosition();
+	UpdatePosition();
 }
 void Player::UpdateInput(SDL_Keycode key) noexcept {
 	switch (key) {
@@ -73,6 +70,12 @@ void Player::Reset() noexcept {
 }
 
 
+void Player::UpdatePosition() noexcept {
+	if (m_SnakeBody.size() > 1) {
+		UpdateBodyPosition();
+	}
+	UpdateHeadPosition();
+}
 void Player::UpdateHeadPosition() noexcept {
 	Position* SnakeHeadPosition = std::begin(m_SnakeBody)._Ptr;
 
