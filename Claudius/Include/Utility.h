@@ -13,6 +13,13 @@ namespace DataTypes {
 			m_Y += rhs.m_Y;
 			return *this;
 		}
+
+		bool operator!=(const Position& rhs) const noexcept {
+			if (m_X != rhs.m_X || m_Y != rhs.m_Y) {
+				return true;
+			}
+			return false;
+		}
 	};
 
 	struct Color {
@@ -36,6 +43,17 @@ namespace EntityAttributes {
 	static constexpr int SNAKE_MOVEMENT_SPEED = 15;
 
 	static constexpr Size ENTITY_SIZE{ 10, 10 };
+}
+
+namespace MovementDirections {
+	using DataTypes::Position;
+	using namespace EntityAttributes;
+
+	static constexpr Position UP{ 0, -SNAKE_MOVEMENT_SPEED };
+	static constexpr Position DOWN{ 0, SNAKE_MOVEMENT_SPEED };
+	static constexpr Position LEFT{ -SNAKE_MOVEMENT_SPEED, 0 };
+	static constexpr Position RIGHT{ SNAKE_MOVEMENT_SPEED, 0 };
+	static constexpr Position NONE{ 0, 0 };
 }
 
 

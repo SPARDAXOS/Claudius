@@ -9,26 +9,27 @@ void Player::Update([[maybe_unused]] float deltaTime) noexcept {
 }
 void Player::UpdateInput(SDL_Keycode key) noexcept {
 	using namespace EntityAttributes;
+	using namespace MovementDirections;
 
 	switch (key) {
 	case SDLK_LEFT: {
-		if (m_MovementVelocity.m_X != SNAKE_MOVEMENT_SPEED) {
-			m_MovementVelocity = { -SNAKE_MOVEMENT_SPEED, 0 };
+		if (m_MovementVelocity != RIGHT) {
+			m_MovementVelocity = LEFT;
 		}
 	}break;
 	case SDLK_RIGHT: {
-		if (m_MovementVelocity.m_X != -SNAKE_MOVEMENT_SPEED) {
-			m_MovementVelocity = { SNAKE_MOVEMENT_SPEED, 0 };
+		if (m_MovementVelocity != LEFT) {
+			m_MovementVelocity = RIGHT;
 		}
 	}break;
 	case SDLK_UP: {
-		if (m_MovementVelocity.m_Y != SNAKE_MOVEMENT_SPEED) {
-			m_MovementVelocity = { 0, -SNAKE_MOVEMENT_SPEED };
+		if (m_MovementVelocity != DOWN) {
+			m_MovementVelocity = UP;
 		}
 	}break;
 	case SDLK_DOWN: {
-		if (m_MovementVelocity.m_Y != -SNAKE_MOVEMENT_SPEED) {
-			m_MovementVelocity = { 0, SNAKE_MOVEMENT_SPEED };
+		if (m_MovementVelocity != UP) {
+			m_MovementVelocity = DOWN;
 		}
 	}break;
 	default: {
@@ -45,10 +46,10 @@ void Player::Render(const Renderer& renderer) const noexcept {
 size_t Player::GetSnakeBodySize() const noexcept {
 	return m_SnakeBody.size();
 }
-Position Player::GetSnakeHeadCopy() const noexcept {
+const Position& Player::GetSnakeHead() const noexcept {
 	return m_SnakeBody.front();
 }
-Position& Player::GetSnakeHeadReference() noexcept {
+Position& Player::GetSnakeHead() noexcept {
 	return m_SnakeBody.front();
 }
 [[nodiscard]] SnakeVector Player::GetSnakeBodyOnly() const noexcept {

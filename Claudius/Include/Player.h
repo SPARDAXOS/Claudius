@@ -21,8 +21,8 @@ public:
 	void Render(const Renderer& renderer) const noexcept;
 
 	size_t GetSnakeBodySize() const noexcept;
-	Position GetSnakeHeadCopy() const noexcept;
-	Position& GetSnakeHeadReference() noexcept;
+	const Position& GetSnakeHead() const noexcept;
+	Position& GetSnakeHead() noexcept;
 	[[nodiscard]] SnakeVector GetSnakeBodyOnly() const noexcept;
 
 	void AddBodyPart();

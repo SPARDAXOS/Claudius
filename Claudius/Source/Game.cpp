@@ -50,7 +50,7 @@ void Game::Render() const noexcept {
 
 
 void Game::RunCollisionChecks() {
-	const SDL_Rect SnakeHeadRect = SDLTypesConstruction::ConstructSDLType(m_Player.GetSnakeHeadCopy());
+	const SDL_Rect SnakeHeadRect = SDLTypesConstruction::ConstructSDLType(m_Player.GetSnakeHead());
 
 	if (m_Player.GetSnakeBodySize() > 1) {
 		if (IsPlayerCollidingWithBody(SnakeHeadRect)) {
@@ -79,7 +79,7 @@ void Game::RunCollisionChecks() {
 }
 [[nodiscard]] bool Game::IsPlayerCollidingWithScreenBounds() const noexcept {
 	const WindowDimensions Boundries = m_MainWindow.m_Dimensions;
-	const Position PlayerPosition = m_Player.GetSnakeHeadCopy();
+	const Position PlayerPosition = m_Player.GetSnakeHead();
 
 	const bool ConditionPositiveX = PlayerPosition.m_X >= SDL_static_cast(int, Boundries.m_Width);
 	const bool ConditionNegativeX = PlayerPosition.m_X < 0;
@@ -102,7 +102,7 @@ void Game::AppleEaten() {
 	Randomizer::RandomizePosition(m_Apple, m_MainWindow.m_Dimensions);
 }
 void Game::RandomizeEntitiesPositions() noexcept {
-	Randomizer::RandomizePosition(m_Player.GetSnakeHeadReference(), m_MainWindow.m_Dimensions);
+	Randomizer::RandomizePosition(m_Player.GetSnakeHead(), m_MainWindow.m_Dimensions);
 	Randomizer::RandomizePosition(m_Apple, m_MainWindow.m_Dimensions);
 }
 
