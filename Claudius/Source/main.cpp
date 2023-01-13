@@ -9,7 +9,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
 		SnakeGame.Run();
 	}
 	catch (const std::exception& exception) {
-		std::cout << exception.what() << std::endl;
+		std::cerr << exception.what() << std::endl;
 		return 1;
 	}
 

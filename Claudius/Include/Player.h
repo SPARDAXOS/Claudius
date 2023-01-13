@@ -2,40 +2,30 @@
 #include "SDL.h"
 #include "Renderer.h"
 #include "Window.h"
-#include "EntityAttributes.h"
 
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <span>
 
 
-class Player {
+class Player final {
 	using WindowDimensions = Window::Dimensions;
-	using Position = Utility::Position;
+	using Position = DataTypes::Position;
 	using SnakeVector = std::vector<Position>;
-
-private:
-	enum class MovementDirection {
-		NONE,
-		RIGHT,
-		LEFT,
-		UP,
-		DOWN
-	};
 
 public:
 	void Update([[maybe_unused]] float deltaTime) noexcept;
 	void UpdateInput(SDL_Keycode key) noexcept;
-	void Render(const Renderer* renderer) const noexcept;
+	void Render(const Renderer& renderer) const noexcept;
 
-public:
 	size_t GetSnakeBodySize() const noexcept;
-	Position GetSnakeHead() const noexcept;
+	Position GetSnakeHeadCopy() const noexcept;
+	Position& GetSnakeHeadReference() noexcept;
 	[[nodiscard]] SnakeVector GetSnakeBodyOnly() const noexcept;
 
-public:
-	void RandomizePosition(WindowDimensions windowDimensions) noexcept;
-	void AddBodyPart() noexcept;
+	void AddBodyPart();
 	void Reset() noexcept;
 
 private:
@@ -43,13 +33,10 @@ private:
 	void UpdateBodyPosition() noexcept;
 	void UpdateHeadPosition() noexcept;
 
-private:
-	void RenderHead(const Renderer* renderer) const noexcept;
-	void RenderBody(const Renderer* renderer) const noexcept;
+	void RenderHead(const Renderer& renderer) const noexcept;
+	void RenderBody(const Renderer& renderer) const noexcept;
 
-private:
 	SnakeVector m_SnakeBody = { {} };
 
-private:
-	MovementDirection m_CurrentMovementDirection = MovementDirection::NONE;
+	Position m_MovementVelocity = { 0, 0 };
 };

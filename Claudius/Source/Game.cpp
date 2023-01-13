@@ -1,7 +1,7 @@
 #include "Game.h"
 
 
-void Game::Run() noexcept {
+void Game::Run() {
 	std::srand(SDL_static_cast(unsigned int, time(nullptr)));
 
 	m_Running = true;
@@ -32,7 +32,7 @@ void Game::PollEvents() noexcept {
 		}
 	}
 }
-void Game::Update() noexcept {
+void Game::Update() {
 	const float DeltaTime = CalculateDeltaTime();
 	m_ElapsedTime += DeltaTime;
 
@@ -43,62 +43,53 @@ void Game::Update() noexcept {
 	RunCollisionChecks();
 }
 void Game::Render() const noexcept {
-	m_Player.Render(&m_MainRenderer);
-	m_Apple.Render(&m_MainRenderer);
+	m_Player.Render(m_MainRenderer);
+	m_MainRenderer.Render(m_Apple, EntityAttributes::APPLE_COLOR);
 	m_MainRenderer.Present();
 }
 
 
-void Game::RunCollisionChecks() noexcept {
-	const SDL_Rect SnakeHeadRect = CreateSDLRect(m_Player.GetSnakeHead());
+void Game::RunCollisionChecks() {
+	const SDL_Rect SnakeHeadRect = SDLTypesConstruction::ConstructSDLType(m_Player.GetSnakeHeadCopy());
 
 	if (m_Player.GetSnakeBodySize() > 1) {
-		if (CheckPlayerBodyCollision(SnakeHeadRect)) {
+		if (IsPlayerCollidingWithBody(SnakeHeadRect)) {
 			ResetGameState();
 		}
 	}
-	if (CheckPlayerAppleCollision(SnakeHeadRect)) {
+	if (IsPlayerCollidingWithApple(SnakeHeadRect)) {
 		AppleEaten();
 	}
-	if (CheckPlayerBoundries()) {
+	if (IsPlayerCollidingWithScreenBounds()) {
 		ResetGameState();
 	}
 }
-[[nodiscard]] bool Game::CheckPlayerAppleCollision(const SDL_Rect& player) const noexcept {
-	const SDL_Rect AppleRect = CreateSDLRect(m_Apple.m_Body);
-	const auto Results = SDL_HasIntersection(&player, &AppleRect);
-	if (Results == SDL_TRUE) {
-		return true;
-	}
-	return false;
+[[nodiscard]] bool Game::IsPlayerCollidingWithApple(const SDL_Rect& player) const noexcept {
+	const SDL_Rect AppleRect = SDLTypesConstruction::ConstructSDLType(m_Apple);
+	return SDL_HasIntersection(&player, &AppleRect);;
 }
-[[nodiscard]] bool Game::CheckPlayerBodyCollision(const SDL_Rect& player) const noexcept {
+[[nodiscard]] bool Game::IsPlayerCollidingWithBody(const SDL_Rect& player) const noexcept {
 	std::vector<Position> Body = m_Player.GetSnakeBodyOnly();
+
 	auto CheckHeadWithBody = [this, &player](const Position& entity) noexcept {
-		const SDL_Rect BodyPartRect = CreateSDLRect(entity);
-		const auto Results = SDL_HasIntersection(&player, &BodyPartRect);
-		if (Results == SDL_TRUE) {
-			return true;
-		}
-		return false;
+		const SDL_Rect BodyPartRect = SDLTypesConstruction::ConstructSDLType(entity);
+		return SDL_HasIntersection(&player, &BodyPartRect);
 	};
 	return std::any_of(std::begin(Body), std::end(Body), CheckHeadWithBody);
 }
-[[nodiscard]] bool Game::CheckPlayerBoundries() const noexcept {
+[[nodiscard]] bool Game::IsPlayerCollidingWithScreenBounds() const noexcept {
 	const WindowDimensions Boundries = m_MainWindow.m_Dimensions;
-	const Position PlayerPosition = m_Player.GetSnakeHead();
+	const Position PlayerPosition = m_Player.GetSnakeHeadCopy();
 
 	const bool ConditionPositiveX = PlayerPosition.m_X >= SDL_static_cast(int, Boundries.m_Width);
 	const bool ConditionNegativeX = PlayerPosition.m_X < 0;
 	const bool ConditionPositiveY = PlayerPosition.m_Y >= SDL_static_cast(int, Boundries.m_Height);
 	const bool ConditionNegativeY = PlayerPosition.m_Y < 0;
+
 	if (ConditionPositiveX || ConditionNegativeX || ConditionPositiveY || ConditionNegativeY) {
 		return true;
 	}
 	return false;
-}
-SDL_Rect Game::CreateSDLRect(Position position) const noexcept {
-	return SDL_Rect(position.m_X, position.m_Y, EntitySize.m_Width, EntitySize.m_Height);
 }
 
 
@@ -106,13 +97,13 @@ void Game::ResetGameState() noexcept {
 	m_Player.Reset();
 	RandomizeEntitiesPositions();
 }
-void Game::AppleEaten() noexcept {
+void Game::AppleEaten() {
 	m_Player.AddBodyPart();
-	m_Apple.RandomizePosition(m_MainWindow.m_Dimensions);
+	Randomizer::RandomizePosition(m_Apple, m_MainWindow.m_Dimensions);
 }
 void Game::RandomizeEntitiesPositions() noexcept {
-	m_Player.RandomizePosition(m_MainWindow.m_Dimensions);
-	m_Apple.RandomizePosition(m_MainWindow.m_Dimensions);
+	Randomizer::RandomizePosition(m_Player.GetSnakeHeadReference(), m_MainWindow.m_Dimensions);
+	Randomizer::RandomizePosition(m_Apple, m_MainWindow.m_Dimensions);
 }
 
 
