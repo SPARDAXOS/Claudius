@@ -14,11 +14,14 @@ namespace DataTypes {
 			return *this;
 		}
 
-		bool operator!=(const Position& rhs) const noexcept {
-			if (m_X != rhs.m_X || m_Y != rhs.m_Y) {
+		bool operator==(const Position& rhs) const noexcept {
+			if (m_X == rhs.m_X && m_Y == rhs.m_Y) {
 				return true;
 			}
 			return false;
+		}
+		bool operator!=(const Position& rhs) const noexcept {
+			return !(*this == rhs);
 		}
 	};
 
@@ -56,13 +59,11 @@ namespace MovementDirections {
 	static constexpr Position NONE{ 0, 0 };
 }
 
-
 namespace Randomizer {
 	using namespace DataTypes;
 
 	void RandomizePosition(Position& position, Window::Dimensions windowDimensions) noexcept;
 }
-
 
 namespace SDLTypesConstruction {
 	constexpr SDL_Color ConstructSDLType(DataTypes::Color color) noexcept {
