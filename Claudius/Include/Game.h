@@ -1,5 +1,4 @@
 #pragma once
-#include "SDL.h"
 #include "SDLInitializer.h"
 #include "Window.h"
 #include "Renderer.h"

@@ -8,33 +8,18 @@ void Player::Update([[maybe_unused]] float deltaTime) noexcept {
 	UpdatePosition();
 }
 void Player::UpdateInput(SDL_Keycode key) noexcept {
-	using namespace EntityAttributes;
 	using namespace MovementDirections;
-
-	switch (key) {
-	case SDLK_LEFT: {
-		if (m_MovementVelocity != RIGHT) {
-			m_MovementVelocity = LEFT;
-		}
-	}break;
-	case SDLK_RIGHT: {
-		if (m_MovementVelocity != LEFT) {
-			m_MovementVelocity = RIGHT;
-		}
-	}break;
-	case SDLK_UP: {
-		if (m_MovementVelocity != DOWN) {
-			m_MovementVelocity = UP;
-		}
-	}break;
-	case SDLK_DOWN: {
-		if (m_MovementVelocity != UP) {
-			m_MovementVelocity = DOWN;
-		}
-	}break;
-	default: {
-		return;
+	if (key == SDLK_LEFT && m_MovementVelocity != RIGHT) {
+		m_MovementVelocity = LEFT;
 	}
+	else if (key == SDLK_RIGHT && m_MovementVelocity != LEFT) {
+		m_MovementVelocity = RIGHT;
+	}
+	else if (key == SDLK_UP && m_MovementVelocity != DOWN) {
+		m_MovementVelocity = UP;
+	}
+	else if (key == SDLK_DOWN && m_MovementVelocity != UP) {
+		m_MovementVelocity = DOWN;
 	}
 }
 void Player::Render(const Renderer& renderer) const noexcept {
@@ -70,7 +55,7 @@ void Player::AddBodyPart() {
 	}
 }
 void Player::Reset() noexcept {
-	m_MovementVelocity = { 0, 0 };
+	m_MovementVelocity = MovementDirections::NONE;
 	m_SnakeBody.clear();
 	m_SnakeBody.push_back({});
 }

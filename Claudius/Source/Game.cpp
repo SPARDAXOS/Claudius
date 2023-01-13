@@ -50,7 +50,7 @@ void Game::Render() const noexcept {
 
 
 void Game::RunCollisionChecks() {
-	const SDL_Rect SnakeHeadRect = SDLTypesConstruction::ConstructSDLType(m_Player.GetSnakeHead());
+	const SDL_Rect SnakeHeadRect = SDLTypesConverter::ConvertToSDLType(m_Player.GetSnakeHead());
 
 	if (m_Player.GetSnakeBodySize() > 1) {
 		if (IsPlayerCollidingWithBody(SnakeHeadRect)) {
@@ -65,14 +65,14 @@ void Game::RunCollisionChecks() {
 	}
 }
 [[nodiscard]] bool Game::IsPlayerCollidingWithApple(const SDL_Rect& player) const noexcept {
-	const SDL_Rect AppleRect = SDLTypesConstruction::ConstructSDLType(m_Apple);
+	const SDL_Rect AppleRect = SDLTypesConverter::ConvertToSDLType(m_Apple);
 	return SDL_HasIntersection(&player, &AppleRect);;
 }
 [[nodiscard]] bool Game::IsPlayerCollidingWithBody(const SDL_Rect& player) const noexcept {
 	std::vector<Position> Body = m_Player.GetSnakeBodyOnly();
 
 	auto CheckHeadWithBody = [this, &player](const Position& entity) noexcept {
-		const SDL_Rect BodyPartRect = SDLTypesConstruction::ConstructSDLType(entity);
+		const SDL_Rect BodyPartRect = SDLTypesConverter::ConvertToSDLType(entity);
 		return SDL_HasIntersection(&player, &BodyPartRect);
 	};
 	return std::any_of(std::begin(Body), std::end(Body), CheckHeadWithBody);

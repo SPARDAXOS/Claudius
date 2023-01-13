@@ -3,10 +3,9 @@
 
 
 void Renderer::Render(Position drawPosition, Color drawColor) const noexcept {
-	using namespace SDLTypesConstruction;
-
-	SetRenderColor(ConstructSDLType(drawColor));
-	const SDL_Rect DrawRect = ConstructSDLType(drawPosition);
+	using namespace SDLTypesConverter;
+	SetRenderColor(ConvertToSDLType(drawColor));
+	const SDL_Rect DrawRect = ConvertToSDLType(drawPosition);
 	SDL_RenderFillRect(m_Renderer, &DrawRect);
 }
 void Renderer::Present() const noexcept {

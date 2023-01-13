@@ -1,6 +1,5 @@
 #pragma once
 #include "SDL.h"
-#include <iostream>
 #include "Window.h"
 
 namespace DataTypes {
@@ -33,7 +32,6 @@ namespace DataTypes {
 	};
 }
 
-
 namespace EntityAttributes {
 	using Color = DataTypes::Color;
 	using Size = DataTypes::Size;
@@ -64,11 +62,11 @@ namespace Randomizer {
 	void RandomizePosition(Position& position, Window::Dimensions windowDimensions) noexcept;
 }
 
-namespace SDLTypesConstruction {
-	constexpr SDL_Color ConstructSDLType(DataTypes::Color color) noexcept {
+namespace SDLTypesConverter {
+	constexpr SDL_Color ConvertToSDLType(DataTypes::Color color) noexcept {
 		return SDL_Color(color.m_R, color.m_G, color.m_B, color.m_A);
 	}
-	constexpr SDL_Rect ConstructSDLType(const DataTypes::Position position) noexcept {
+	constexpr SDL_Rect ConvertToSDLType(const DataTypes::Position position) noexcept {
 		using namespace EntityAttributes;
 		return SDL_Rect(position.m_X, position.m_Y, ENTITY_SIZE.m_Width, ENTITY_SIZE.m_Height);
 	}
