@@ -13,7 +13,6 @@ namespace DataTypes {
 			m_Y += rhs.m_Y;
 			return *this;
 		}
-
 		bool operator==(const Position& rhs) const noexcept {
 			if (m_X == rhs.m_X && m_Y == rhs.m_Y) {
 				return true;
